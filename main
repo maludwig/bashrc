@@ -4,9 +4,10 @@ if [ "$USER" == "" ]; then
 	USER="${USERNAME}"
 fi
 
-# Machine specific variables
-HOST_ALIAS="WIN8"
-
+# Host specific variables
+if [ -f ~/bashrc/hostvars ]; then
+	. ~/bashrc/hostvars
+fi
 # Bash aliases
 if [ -f ~/bashrc/aliases ]; then
 	. ~/bashrc/aliases
