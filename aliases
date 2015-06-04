@@ -1,0 +1,59 @@
+# User specific aliases and functions
+# Bash aliases
+alias ll='ls -lah'
+alias l='ls --color'
+alias w='cd /var/www/html'
+alias x='cd /var/www/html/wp-content/themes/x-child'
+alias md='mkdir'
+alias ..='cd ..'
+alias cd..='cd ..'
+
+# Log aliases
+alias tail-httpd="tail -n20 /var/log/httpd/error_log"
+
+# MySQL aliases
+alias mq="mysql -uroot -p'$RDSPASS'"
+alias mqd="mysqldump -uroot -p'$RDSPASS'"
+alias mq-rds="mysql -uroot -p'$RDSPASS' -h'$RDSHOST'"
+alias mqd-rds="mysqldump -uroot -p'$RDSPASS' -h'$RDSHOST'"
+
+# Git aliases
+alias gits='git status'
+alias gita='git add -A'
+alias gitan='git add -An'
+alias gitc='git commit -m'
+alias gitch='git checkout'
+alias gitchb='git checkout -b'
+alias gitpush='git push origin master'
+alias gitpull='git pull origin master'
+
+# Mercurial aliases
+function hg-clone { hg clone ssh://hg@ss2:/$1; }
+alias hgs='hg st'
+alias hga='hg add'
+alias hgan='hg add -n'
+alias hgc='hg commit -m'
+alias hgch='hg update -c'
+alias hgchb='hg branch'
+alias hgpush='hg push'
+alias hgpull='hg pull'
+
+# Package Manager aliases
+alias ag='apt-get -y install'
+alias ags='apt-get -s install'
+alias agli='apt --installed list'
+alias aglg='apt list | grep'
+alias yumi='yum -y install'
+alias yumlg='yum list | grep'
+alias yumu='yum -y update'
+
+# Service aliases
+function sr { service $1 restart; }
+alias srh='sr httpd'
+alias sra='sr apache2'
+alias srm='sr mysqld'
+alias srn='sr neo4j-service'
+alias srs='sr smb'
+
+# Login aliases
+alias suw='sudo su www-data'
