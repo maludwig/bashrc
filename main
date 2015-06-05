@@ -1,12 +1,12 @@
 # Default variables
-HOST_ALIAS="${HOSTNAME%%.*}"
+export HOST_ALIAS="${HOSTNAME%%.*}"
 if [ "$USER" == "" ]; then
         USER="${USERNAME}"
 fi
 
 # EC2 Environment
 una=`uname -a`
-if [[ "$una"  =~ .*amzn.* ]]; then
+if echo "$una" | grep "amzn" > /dev/null; then
         if [ -f ~/.aws/config ]; then
                 if [ -f ~/bashrc/amzn ]; then
                         . ~/bashrc/amzn
