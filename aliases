@@ -81,6 +81,6 @@ alias scall='systemctl'
 # Common functions 
 function setup-ssh-keys { mkdir ~/.ssh; chmod 700 ~/.ssh; cd ~/.ssh; wget http://edgemontgeek.com/mlkey.pub; chmod 600 mlkey.pub; cp mlkey.pub authorized_keys; }
 alias sync-time='ntpdate pool.ntp.org'
-
+ 
 # Login aliases
 alias suw='sudo su www-data'
