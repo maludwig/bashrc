@@ -27,7 +27,7 @@ alias gitchb='git checkout -b'
 alias gitpush='git push origin master'
 alias gitpull='git pull origin master'
 function gitacp { git add -A; git commit -m $1; git push origin master; }
-function gitcp { git commit -m $1 ; git push origin master; }
+function gitcp { git commit -m "'$1'" ; git push origin master; }
 #function gitcp { echo boo; echo moo; }
 
 # Mercurial aliases
