@@ -4,6 +4,13 @@ if [ "$USER" == "" ]; then
 	USER="${USERNAME}"
 fi
 
+# EC2 Environment
+if [[ `uname -a` == *"amzn" * ]]; then
+	if [ -f ~/bashrc/amzn ]; then
+		. ~/bashrc/amzn
+	fi
+fi
+
 # Host specific variables
 if [ -f ~/bashrc/hostvars ]; then
 	. ~/bashrc/hostvars

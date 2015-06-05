@@ -54,6 +54,23 @@ alias sra='sr apache2'
 alias srm='sr mysqld'
 alias srn='sr neo4j-service'
 alias srs='sr smb'
+alias sall='service --status-all'
+
+alias sc='systemctl'
+function scr { systemctl restart $1; }
+alias scrh='scr httpd'
+alias scra='scr apache2'
+alias scrm='scr mysqld'
+alias scrn='scr neo4j-service'
+alias scrs='scr smb'
+
+function scs { systemctl status $1; }
+alias scsh='scs httpd'
+alias scsa='scs apache2'
+alias scsm='scs mysqld'
+alias scsn='scs neo4j-service'
+alias scss='scs smb'
+alias scall='systemctl'
 
 # Login aliases
 alias suw='sudo su www-data'
