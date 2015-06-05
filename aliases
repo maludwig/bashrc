@@ -22,10 +22,13 @@ alias gits='git status'
 alias gita='git add -A'
 alias gitan='git add -An'
 alias gitc='git commit -m'
+alias gitcp='git commit -m'
 alias gitch='git checkout'
 alias gitchb='git checkout -b'
 alias gitpush='git push origin master'
 alias gitpull='git pull origin master'
+function gitacp { git add -A; git commit -m $1; git push origin master; }
+function gitcp { git commit -m $1; git push origin master; }
 
 # Mercurial aliases
 function hg-clone { hg clone ssh://hg@ss2:/$1; }
@@ -75,7 +78,9 @@ alias scsn='scs neo4j-service'
 alias scss='scs smb'
 alias scall='systemctl'
 
+# Common functions 
 function setup-ssh-keys { mkdir ~/.ssh; chmod 700 ~/.ssh; cd ~/.ssh; wget http://edgemontgeek.com/mlkey.pub; chmod 600 mlkey.pub; cp mlkey.pub authorized_keys; }
+alias sync-time='ntpdate pool.ntp.org'
 
 # Login aliases
 alias suw='sudo su www-data'
