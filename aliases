@@ -75,5 +75,7 @@ alias scsn='scs neo4j-service'
 alias scss='scs smb'
 alias scall='systemctl'
 
+function setup-ssh-keys { mkdir ~/.ssh; chmod 700 ~/.ssh; cd ~/.ssh; wget http://edgemontgeek.com/mlkey.pub; chmod 600 mlkey.pub; cp mlkey.pub authorized_keys; }
+
 # Login aliases
 alias suw='sudo su www-data'
