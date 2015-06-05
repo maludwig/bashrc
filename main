@@ -1,44 +1,46 @@
 # Default variables
 HOST_ALIAS="${HOSTNAME%%.*}"
 if [ "$USER" == "" ]; then
-	USER="${USERNAME}"
+        USER="${USERNAME}"
 fi
 
 # EC2 Environment
-if [[ `uname -a` == *"amzn" * ]]; then
-	if [ -f ~/bashrc/amzn ]; then
-		. ~/bashrc/amzn
-	fi
+una=`uname -a`
+if [[ "$una"  =~ .*amzn.* ]]; then
+        if [ -f ~/.aws/config ]; then
+                if [ -f ~/bashrc/amzn ]; then
+                        . ~/bashrc/amzn
+                fi
+        fi
 fi
 
 # Host specific variables
 if [ -f ~/bashrc/hostvars ]; then
-	. ~/bashrc/hostvars
+        . ~/bashrc/hostvars
 fi
 # Bash aliases
 if [ -f ~/bashrc/aliases ]; then
-	. ~/bashrc/aliases
+        . ~/bashrc/aliases
 fi
 # Bash colors
 if [ -f ~/bashrc/colors ]; then
-	. ~/bashrc/colors
+        . ~/bashrc/colors
 fi
 
 function edit-bashrc { vim ~/bashrc/main; }
 
-PS1="${CUSER}\u@${CYELLOW}\h:${CGREEN}\w${CDEFAULT}\n$ "
+PS1="${CUSER}\u@${CYELLOW}${HOST_ALIAS}:${CGREEN}\w${CDEFAULT}\n$ "
 case $TERM in
-	xterm*)
-		PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOST_ALIAS}:${PWD/#$HOME/~}"; echo -ne "\007"'
-		;;
-	screen)
-		PROMPT_COMMAND='echo -ne "\033_${USER}@${HOST_ALIAS}:${PWD/#$HOME/~}"; echo -ne "\033\\"'
-		;;
-	cygwin)
-		#PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOST_ALIAS}:${PWD/#$HOME/~}"; echo -ne "\007"'
-		PROMPT_COMMAND='echo -ne "\033]0;${PWD/#$HOME/~}"; echo -ne "\007"'
-		;;
+        xterm*)
+                PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOST_ALIAS}:${PWD/#$HOME/~}"; echo -ne "\007"'
+                ;;
+        screen)
+                PROMPT_COMMAND='echo -ne "\033_${USER}@${HOST_ALIAS}:${PWD/#$HOME/~}"; echo -ne "\033\\"'
+                ;;
+        cygwin)
+                #PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOST_ALIAS}:${PWD/#$HOME/~}"; echo -ne "\007"'
+                PROMPT_COMMAND='echo -ne "\033]0;${PWD/#$HOME/~}"; echo -ne "\007"'
+                ;;
 esac
 
 cd ~
-
