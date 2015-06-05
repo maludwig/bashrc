@@ -46,6 +46,9 @@ alias aglg='apt list | grep'
 alias yumi='yum -y install'
 alias yumlg='yum list | grep'
 alias yumu='yum -y update'
+alias pipi='pip install'
+alias pipu='pip install --upgrade'
+alias piplg='pip search'
 
 # Service aliases
 function sr { service $1 restart; }
