@@ -1,5 +1,5 @@
 # Record this directory for later reference
-if [[ $BASH_SOURCE =~ ^/ ]]; then
+if echo $BASH_SOURCE | grep -E "^/" > /dev/null; then
 	BASHRC_DIR="${BASH_SOURCE/\/main/}"
 else
 	if [ "$BASH_SOURCE" == "main" ]; then
@@ -13,6 +13,10 @@ export BASHRC_DIR
 # Bash colors
 if [ -f $BASHRC_DIR/colors ]; then
         . $BASHRC_DIR/colors
+fi
+# Bash aliases
+if [ -f $BASHRC_DIR/aliases ]; then
+        . $BASHRC_DIR/aliases
 fi
 # Default variables
 export HOST_ALIAS="${HOSTNAME%%.*}"
@@ -34,14 +38,9 @@ fi
 if [ -f $BASHRC_DIR/hostvars ]; then
         . $BASHRC_DIR/hostvars
 else
-	echo -ne "${CGREEN} Enter a host alias for this machine: ${CDEFAULT}"
-	read -i "$HOST_ALIAS" HOST_ALIAS
-	echo 'export HOST_ALIAS="'${HOST_ALIAS}'"' > $BASHRC_DIR/hostvars
+	ask-default "Enter a host alias for this machine" "$HOST_ALIAS"
+	echo 'export HOST_ALIAS="'${ASK}'"' > $BASHRC_DIR/hostvars
 	. $BASHRC_DIR/hostvars
-fi
-# Bash aliases
-if [ -f $BASHRC_DIR/aliases ]; then
-        . $BASHRC_DIR/aliases
 fi
 
 PS1="${CUSER}\u@${CYELLOW}${HOST_ALIAS}:${CGREEN}\w${CDEFAULT}\n$ "
