@@ -108,6 +108,8 @@ function setup-ssh-creds {
 		fi
 		cd $BASHRC_DIR
 		git remote set-url origin git@github.com:maludwig/bashrc.git
+		git config --global user.name "Mitchell Ludwig"
+		git config --global user.email mitchell.ludwig@gmail.com
 		cd ~/.ssh
 	fi
 	rm *.gpg
