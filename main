@@ -8,6 +8,7 @@ else
 		BASHRC_DIR="$(pwd)/${BASH_SOURCE/\/main/}"
 	fi
 fi
+export BASHRC_DIR
 
 # Bash colors
 #

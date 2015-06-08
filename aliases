@@ -80,10 +80,11 @@ alias scall='systemctl'
 
 # Common functions 
 alias sync-time='ntpdate pool.ntp.org'
-alias encrypt-file='gpg -c'
+alias encrypt-file='gpg --cipher-algo AES256 --symmetric $1'
 alias decrypt-file='gpg'
 alias regex='~/bashrc/regex.py'
 alias edit-bashrc='cd ~/bashrc; vim'
+function ask-yes { echo -ne "${CYELLOW} $1 [Y/n]: ${CDEFAULT}"; read -n1 ASK; export ASK=${ASK:-y}; }
 function setup-ssh-login { mkdir ~/.ssh; chmod 700 ~/.ssh; cd ~/.ssh; cp ~/bashrc/ssh/mlkey.pub ./ ; cat mlkey.pub >> authorized_keys; chmod 600 *; cd; }
 function setup-ssh-creds {
 	if [ ! -d "~/.ssh" ]; then
@@ -92,14 +93,25 @@ function setup-ssh-creds {
 	cd ~/.ssh
 	cp ~/bashrc/ssh/mlkey.pem.gpg ./
 	decrypt-file mlkey.pem.gpg
-	echo -ne "${CYELLOW} Set mlkey as id_rsa? [Y/n]: ${CDEFAULT}"
-	read -n 1 setmlkey
-	setmlkey="${setmlkey:-y}"
-	echo "|$setmlkey|"
-	if [ "$setmlkey" != "n" ]; then
+	ask-yes "Set mlkey as id_rsa?"
+	if [ "$ASK" != "n" ]; then
 		cp mlkey.pem id_rsa
 	fi
-	rm mlkey.pem.gpg
+	ask-yes "Set gmail as github key?"
+	if [ "$ASK" != "n" ]; then
+		cp $BASHRC_DIR/ssh/gmail.pem.gpg ./
+		decrypt-file gmail.pem.gpg
+		if grep -L "github.com" config; then
+			echo "config already contains github entry, skipping"
+		else
+			cat $BASHRC_DIR/ssh/config-git >> ~/.ssh/config
+		fi
+		cd $BASHRC_DIR
+		git remote set-url origin git@github.com:maludwig/bashrc.git
+		cd ~/.ssh
+	fi
+	rm *.gpg
+	chmod 700 .
 	chmod 600 *
 }
 function date-today { echo $(date +%F); }
