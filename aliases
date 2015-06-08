@@ -103,7 +103,7 @@ function setup-ssh-creds {
 	if [ "$ASK" != "n" ]; then
 		cp $BASHRC_DIR/ssh/gmail.pem.gpg ./
 		decrypt-file gmail.pem.gpg
-		if grep -L "github.com" config; then
+		if grep -L "github.com" config > /dev/null; then
 			echo "config already contains github entry, skipping"
 		else
 			cat $BASHRC_DIR/ssh/config-git >> ~/.ssh/config
