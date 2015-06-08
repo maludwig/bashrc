@@ -11,7 +11,6 @@ fi
 export BASHRC_DIR
 
 # Bash colors
-#
 if [ -f $BASHRC_DIR/colors ]; then
         . $BASHRC_DIR/colors
 fi
@@ -36,7 +35,7 @@ if [ -f $BASHRC_DIR/hostvars ]; then
         . $BASHRC_DIR/hostvars
 else
 	echo -ne "${CGREEN} Enter a host alias for this machine: ${CDEFAULT}"
-	read HOST_ALIAS -i "$HOST_ALIAS"
+	read -i "$HOST_ALIAS" HOST_ALIAS
 	echo 'export HOST_ALIAS="'${HOST_ALIAS}'"' > $BASHRC_DIR/hostvars
 	. $BASHRC_DIR/hostvars
 fi
