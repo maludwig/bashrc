@@ -1,6 +1,18 @@
+# Record this directory for later reference
+if [[ $BASH_SOURCE =~ ^/ ]]; then
+	BASHRC_DIR="${BASH_SOURCE/\/main/}"
+else
+	if [ "$BASH_SOURCE" == "main" ]; then
+		BASHRC_DIR=$(pwd)
+	else
+		BASHRC_DIR="$(pwd)/${BASH_SOURCE/\/main/}"
+	fi
+fi
+
 # Bash colors
-if [ -f ~/bashrc/colors ]; then
-        . ~/bashrc/colors
+#
+if [ -f $BASHRC_DIR/colors ]; then
+        . $BASHRC_DIR/colors
 fi
 # Default variables
 export HOST_ALIAS="${HOSTNAME%%.*}"
@@ -12,24 +24,24 @@ fi
 una=`uname -a`
 if echo "$una" | grep "amzn" > /dev/null; then
         if [ -f ~/.aws/config ]; then
-                if [ -f ~/bashrc/amzn ]; then
-                        . ~/bashrc/amzn
+                if [ -f $BASHRC_DIR/amzn ]; then
+                        . $BASHRC_DIR/amzn
                 fi
         fi
 fi
 
 # Host specific variables
-if [ -f ~/bashrc/hostvars ]; then
-        . ~/bashrc/hostvars
+if [ -f $BASHRC_DIR/hostvars ]; then
+        . $BASHRC_DIR/hostvars
 else
 	echo -ne "${CGREEN} Enter a host alias for this machine: ${CDEFAULT}"
-	read HOST_ALIAS
-	echo 'export HOST_ALIAS="'${HOST_ALIAS}'"' > ~/bashrc/hostvars
-	. ~/bashrc/hostvars
+	read HOST_ALIAS -i "$HOST_ALIAS"
+	echo 'export HOST_ALIAS="'${HOST_ALIAS}'"' > $BASHRC_DIR/hostvars
+	. $BASHRC_DIR/hostvars
 fi
 # Bash aliases
-if [ -f ~/bashrc/aliases ]; then
-        . ~/bashrc/aliases
+if [ -f $BASHRC_DIR/aliases ]; then
+        . $BASHRC_DIR/aliases
 fi
 
 PS1="${CUSER}\u@${CYELLOW}${HOST_ALIAS}:${CGREEN}\w${CDEFAULT}\n$ "
