@@ -1,3 +1,7 @@
+# Bash colors
+if [ -f ~/bashrc/colors ]; then
+        . ~/bashrc/colors
+fi
 # Default variables
 export HOST_ALIAS="${HOSTNAME%%.*}"
 if [ "$USER" == "" ]; then
@@ -17,14 +21,15 @@ fi
 # Host specific variables
 if [ -f ~/bashrc/hostvars ]; then
         . ~/bashrc/hostvars
+else
+	echo -ne "${CGREEN} Enter a host alias for this machine: ${CDEFAULT}"
+	read HOST_ALIAS
+	echo 'export HOST_ALIAS="'${HOST_ALIAS}'"' > ~/bashrc/hostvars
+	. ~/bashrc/hostvars
 fi
 # Bash aliases
 if [ -f ~/bashrc/aliases ]; then
         . ~/bashrc/aliases
-fi
-# Bash colors
-if [ -f ~/bashrc/colors ]; then
-        . ~/bashrc/colors
 fi
 
 function edit-bashrc { vim ~/bashrc/main; }
