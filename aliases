@@ -102,7 +102,8 @@ function setup-ssh-creds {
 	rm mlkey.pem.gpg
 	chmod 600 *
 }
-
+function date-today { echo $(date +%F); }
+function date-second { echo $(date +%F_%T); }
  
 # Login aliases
 alias suw='sudo su www-data'

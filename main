@@ -57,5 +57,9 @@ case $TERM in
                 PROMPT_COMMAND='echo -ne "\033]0;${PWD/#$HOME/~}"; echo -ne "\007"'
                 ;;
 esac
+# Bash aliases
+if [ -f $BASHRC_DIR/history ]; then
+        . $BASHRC_DIR/history
+fi
 
 cd ~
