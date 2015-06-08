@@ -1,0 +1,5 @@
+Host eg
+        HostName edgemontgeek.com
+        User ec2-user
+        IdentityFile ~/.ssh/mlkey.pem
+

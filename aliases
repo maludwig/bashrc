@@ -4,7 +4,7 @@ alias ll='ls -lah'
 alias l='ls --color'
 alias w='cd /var/www/html'
 alias x='cd /var/www/html/wp-content/themes/x-child'
-alias md='mkdir'
+function md { mkdir $1; cd $1; }
 alias ..='cd ..'
 alias cd..='cd ..'
 
@@ -26,9 +26,8 @@ alias gitch='git checkout'
 alias gitchb='git checkout -b'
 alias gitpush='git push origin master'
 alias gitpull='git pull origin master'
-function gitacp { git add -A; git commit -m $1; git push origin master; }
-function gitcp { git commit -m "'$1'" ; git push origin master; }
-#function gitcp { echo boo; echo moo; }
+function gitacp { git add -A; git commit -m "$1"; git push origin master; }
+function gitcp { git commit -m "$1" ; git push origin master; }
 
 # Mercurial aliases
 function hg-clone { hg clone ssh://hg@ss2:/$1; }
@@ -79,7 +78,7 @@ alias scss='scs smb'
 alias scall='systemctl'
 
 # Common functions 
-function setup-ssh-keys { mkdir ~/.ssh; chmod 700 ~/.ssh; cd ~/.ssh; wget http://edgemontgeek.com/mlkey.pub; chmod 600 mlkey.pub; cp mlkey.pub authorized_keys; }
+function setup-ssh-login { mkdir ~/.ssh; chmod 700 ~/.ssh; cd ~/.ssh; cp ~/bashrc/ssh/mlkey.pub ./ ; cat mlkey.pub >> authorized_keys; chmod 600 *; }
 alias sync-time='ntpdate pool.ntp.org'
 alias encrypt-file='gpg -c'
 alias decrypt-file='gpg'
