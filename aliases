@@ -83,7 +83,7 @@ function setup-ssh-keys { mkdir ~/.ssh; chmod 700 ~/.ssh; cd ~/.ssh; wget http:/
 alias sync-time='ntpdate pool.ntp.org'
 alias encrypt-file='gpg -c'
 alias decrypt-file='gpg'
-alias regex='~/bashrc/regex.sh'
+alias regex='~/bashrc/regex.py'
  
 # Login aliases
 alias suw='sudo su www-data'
