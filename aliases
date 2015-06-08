@@ -26,6 +26,7 @@ alias gitch='git checkout'
 alias gitchb='git checkout -b'
 alias gitpush='git push origin master'
 alias gitpull='git pull origin master'
+alias gitgraph='git log --graph --oneline --decorate --date=relative --all --color'
 function gitacp { git add -A; git commit -m "$1"; git push origin master; }
 function gitcp { git commit -m "$1" ; git push origin master; }
 
@@ -78,11 +79,30 @@ alias scss='scs smb'
 alias scall='systemctl'
 
 # Common functions 
-function setup-ssh-login { mkdir ~/.ssh; chmod 700 ~/.ssh; cd ~/.ssh; cp ~/bashrc/ssh/mlkey.pub ./ ; cat mlkey.pub >> authorized_keys; chmod 600 *; }
 alias sync-time='ntpdate pool.ntp.org'
 alias encrypt-file='gpg -c'
 alias decrypt-file='gpg'
 alias regex='~/bashrc/regex.py'
+alias edit-bashrc='cd ~/bashrc; vim'
+function setup-ssh-login { mkdir ~/.ssh; chmod 700 ~/.ssh; cd ~/.ssh; cp ~/bashrc/ssh/mlkey.pub ./ ; cat mlkey.pub >> authorized_keys; chmod 600 *; cd; }
+function setup-ssh-creds {
+	if [ ! -d "~/.ssh" ]; then
+		setup-ssh-login
+	fi
+	cd ~/.ssh
+	cp ~/bashrc/ssh/mlkey.pem.gpg ./
+	decrypt-file mlkey.pem.gpg
+	echo -ne "${CYELLOW} Set mlkey as id_rsa? [Y/n]: ${CDEFAULT}"
+	read -n 1 setmlkey
+	setmlkey="${setmlkey:-y}"
+	echo "|$setmlkey|"
+	if [ "$setmlkey" != "n" ]; then
+		cp mlkey.pem id_rsa
+	fi
+	rm mlkey.pem.gpg
+	chmod 600 *
+}
+
  
 # Login aliases
 alias suw='sudo su www-data'

@@ -32,8 +32,6 @@ if [ -f ~/bashrc/aliases ]; then
         . ~/bashrc/aliases
 fi
 
-function edit-bashrc { vim ~/bashrc/main; }
-
 PS1="${CUSER}\u@${CYELLOW}${HOST_ALIAS}:${CGREEN}\w${CDEFAULT}\n$ "
 case $TERM in
         xterm*)
