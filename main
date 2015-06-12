@@ -27,11 +27,9 @@ fi
 # EC2 Environment
 una=`uname -a`
 if echo "$una" | grep "amzn" > /dev/null; then
-        if [ -f ~/.aws/config ]; then
-                if [ -f $BASHRC_DIR/amzn ]; then
-                        . $BASHRC_DIR/amzn
-                fi
-        fi
+	if [ -f $BASHRC_DIR/amzn ]; then
+		. $BASHRC_DIR/amzn
+	fi
 fi
 
 # Host specific variables

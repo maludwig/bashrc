@@ -1,6 +1,8 @@
 # Network name
 export PUBLICIP=$(curl http://169.254.169.254/latest/meta-data/public-ipv4 2> /dev/null)
 export INSTANCEID=`curl 169.254.169.254/latest/meta-data/instance-id 2> /dev/null`
-INSTANCENAME=`aws ec2 describe-tags --filters "Name=resource-id,Values=$INSTANCEID"`
-export INSTANCENAME=`echo $INSTANCENAME | sed 's/.*Value": "\([^"]*\)".*/\1/'`
-export HOST_ALIAS="${INSTANCENAME}"
+if [ -f ~/.aws/config ]; then
+	INSTANCENAME=`aws ec2 describe-tags --filters "Name=resource-id,Values=$INSTANCEID"`
+	export INSTANCENAME=`echo $INSTANCENAME | sed 's/.*Value": "\([^"]*\)".*/\1/'`
+	export HOST_ALIAS="${INSTANCENAME}"
+fi
