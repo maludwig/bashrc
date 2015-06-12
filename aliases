@@ -83,19 +83,20 @@ alias sync-time='ntpdate pool.ntp.org'
 function fix-time { ntpdate time.nist.gov; chkconfig ntpd on; service ntpd start; }
 alias encrypt-file='gpg --cipher-algo AES256 --symmetric $1'
 alias decrypt-file='gpg'
-alias regex='~/bashrc/regex.py'
+alias regex='$BASHRC_DIR/regex.py'
 function regex-lineswap { sed -i '/'"$1"'/c\'"$2" "$3"; }
-alias edit-bashrc='cd ~/bashrc; vim'
+function allow-ssh-root-login { regex-lineswap 'PermitRootLogin' 'PermitRootLogin without-password' /etc/ssh/sshd_config; }
+alias edit-bashrc='cd $BASHRC_DIR; vim'
 function ask-default { echo -ne "${CYELLOW} $1 [$2]: ${CDEFAULT}"; read ASK; export ASK=${ASK:-$2}; }
 function ask-yes { echo -ne "${CYELLOW} $1 [Y/n]: ${CDEFAULT}"; read ASK; export ASK=${ASK:-y}; }
 function ask-no { echo -ne "${CYELLOW} $1 [y/N]: ${CDEFAULT}"; read ASK; export ASK=${ASK:-n}; }
-function setup-ssh-login { mkdir ~/.ssh; chmod 700 ~/.ssh; cd ~/.ssh; cp ~/bashrc/ssh/mlkey.pub ./ ; cat mlkey.pub >> authorized_keys; chmod 600 *; cd ~; restorecon -FRvv ~/.ssh; }
+function setup-ssh-login { mkdir ~/.ssh; chmod 700 ~/.ssh; cd ~/.ssh; cp $BASHRC_DIR/ssh/mlkey.pub ./ ; cat mlkey.pub >> authorized_keys; chmod 600 *; cd ~; restorecon -FRvv ~/.ssh; }
 function setup-ssh-creds {
 	if [ ! -d "~/.ssh" ]; then
 		setup-ssh-login
 	fi
 	cd ~/.ssh
-	cp ~/bashrc/ssh/mlkey.pem.gpg ./
+	cp $BASHRC_DIR/ssh/mlkey.pem.gpg ./
 	decrypt-file mlkey.pem.gpg
 	ask-yes "Set mlkey as id_rsa?"
 	if [ "$ASK" != "n" ]; then
