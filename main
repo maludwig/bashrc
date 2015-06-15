@@ -35,10 +35,6 @@ fi
 # Host specific variables
 if [ -f $BASHRC_DIR/hostvars ]; then
         . $BASHRC_DIR/hostvars
-else
-	ask-default "Enter a host alias for this machine" "$HOST_ALIAS"
-	echo 'export HOST_ALIAS="'${ASK}'"' > $BASHRC_DIR/hostvars
-	. $BASHRC_DIR/hostvars
 fi
 
 PS1="${CUSER}\u@${CYELLOW}${HOST_ALIAS}:${CGREEN}\w${CDEFAULT}\n$ "
@@ -54,7 +50,7 @@ case $TERM in
                 PROMPT_COMMAND='echo -ne "\033]0;${PWD/#$HOME/~}"; echo -ne "\007"'
                 ;;
 esac
-# Bash aliases
+# Bash history improvements
 if [ -f $BASHRC_DIR/history ]; then
         . $BASHRC_DIR/history
 fi

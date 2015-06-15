@@ -123,7 +123,8 @@ function setup-ssh-creds {
 }
 function date-today { echo $(date +%F); }
 function date-second { echo $(date +%F_%T); }
- 
+function set-host-alias { ask-default "Enter a host alias for this machine" "$HOST_ALIAS"; echo 'export HOST_ALIAS="'${ASK}'"' > $BASHRC_DIR/hostvars; . $BASHRC_DIR/hostvars}; }
+
 # Login aliases
-alias suw='sudo su www-data'
+alias suw='sudo su apache'
 
