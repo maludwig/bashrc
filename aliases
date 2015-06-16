@@ -81,6 +81,9 @@ alias scall='systemctl'
 # Ansible aliases
 alias play='ansible-playbook'
 
+# Work directory
+alias work='cd $WORK_HOME'
+
 # Common functions 
 alias sync-time='ntpdate pool.ntp.org'
 function fix-time { ntpdate time.nist.gov; chkconfig ntpd on; service ntpd start; }
