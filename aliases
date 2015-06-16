@@ -78,6 +78,9 @@ alias scsn='scs neo4j-service'
 alias scss='scs smb'
 alias scall='systemctl'
 
+# Ansible aliases
+alias play='ansible-playbook'
+
 # Common functions 
 alias sync-time='ntpdate pool.ntp.org'
 function fix-time { ntpdate time.nist.gov; chkconfig ntpd on; service ntpd start; }
