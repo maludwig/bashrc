@@ -31,7 +31,7 @@ function gitacp { git add -A; git commit -m "$1"; git push origin master; }
 function gitcp { git commit -m "$1" ; git push origin master; }
 
 # Mercurial aliases
-function hg-clone { hg clone ssh://hg@ss2:/$1; }
+function hg-clone { hg clone ssh://hg@spliceserver2:/$1; }
 alias hgs='hg st'
 alias hga='hg add'
 alias hgan='hg add -n'
@@ -129,7 +129,7 @@ function setup-ssh-creds {
 }
 function date-today { echo $(date +%F); }
 function date-second { echo $(date +%F_%T); }
-function set-host-alias { ask-default "Enter a host alias for this machine" "$HOST_ALIAS"; echo 'export HOST_ALIAS="'${ASK}'"' > $BASHRC_DIR/hostvars; . $BASHRC_DIR/hostvars}; }
+function set-host-alias { ask-default "Enter a host alias for this machine" "$HOST_ALIAS"; echo 'export HOST_ALIAS="'${ASK}'"' > $BASHRC_DIR/hostvars; . $BASHRC_DIR/hostvars; }
 
 # Login aliases
 alias suw='sudo su apache'
