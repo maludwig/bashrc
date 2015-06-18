@@ -3,7 +3,8 @@
 alias ll='ls -lah'
 alias l='ls --color'
 alias w='cd /var/www/html'
-alias x='cd /var/www/html/wp-content/themes/x-child'
+alias x='vim /etc/asterisk/extensions.conf'
+alias s='vim /etc/asterisk/sip.conf'
 function md { mkdir $1; cd $1; }
 alias ..='cd ..'
 alias cd..='cd ..'
@@ -29,6 +30,7 @@ alias gitpull='git pull origin master'
 alias gitgraph='git log --graph --oneline --decorate --date=relative --all --color'
 function gitacp { git add -A; git commit -m "$1"; git push origin master; }
 function gitcp { git commit -m "$1" ; git push origin master; }
+function bashrc-update { cd $BASHRC_DIR; gitpull; . main; }
 
 # Mercurial aliases
 function hg-clone { hg clone ssh://hg@spliceserver2:/$1; }
