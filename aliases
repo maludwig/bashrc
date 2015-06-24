@@ -98,9 +98,24 @@ alias edit-bashrc='cd $BASHRC_DIR; vim'
 function ask-default { echo -ne "${CYELLOW} $1 [$2]: ${CDEFAULT}"; read ASK; export ASK=${ASK:-$2}; }
 function ask-yes { echo -ne "${CYELLOW} $1 [Y/n]: ${CDEFAULT}"; read ASK; export ASK=${ASK:-y}; }
 function ask-no { echo -ne "${CYELLOW} $1 [y/N]: ${CDEFAULT}"; read ASK; export ASK=${ASK:-n}; }
-function setup-ssh-login { mkdir ~/.ssh; chmod 700 ~/.ssh; cd ~/.ssh; cp $BASHRC_DIR/ssh/mlkey.pub ./ ; cat mlkey.pub >> authorized_keys; chmod 600 *; cd ~; if [ -f "/usr/sbin/restorecon" ]; then restorecon -FRvv ~/.ssh; fi; }
+function setup-ssh-login { 
+	if [ ! -d ~/.ssh ]; then 
+		mkdir ~/.ssh; 
+	fi
+	chmod 700 ~/.ssh
+	cd ~/.ssh
+	if [ ! -f ~/.ssh/mlkey.pub ]; then
+		cp $BASHRC_DIR/ssh/mlkey.pub ./
+	fi
+	cat mlkey.pub >> authorized_keys
+	chmod 600 *
+	cd ~
+	if [ -f /usr/sbin/restorecon ]; then 
+		restorecon -FRvv ~/.ssh
+	fi
+}
 function setup-ssh-creds {
-	if [ ! -d "~/.ssh" ]; then
+	if [ ! -d ~/.ssh ]; then
 		setup-ssh-login
 	fi
 	cd ~/.ssh
