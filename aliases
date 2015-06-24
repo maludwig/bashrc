@@ -87,6 +87,7 @@ alias play='ansible-playbook'
 alias work='cd $WORK_HOME'
 
 # Common functions 
+function clean-comments { cat "$1" | grep -Ev "^\s*;"; }
 alias sync-time='ntpdate pool.ntp.org'
 function fix-time { ntpdate time.nist.gov; chkconfig ntpd on; service ntpd start; }
 alias encrypt-file='gpg --cipher-algo AES256 --symmetric $1'
