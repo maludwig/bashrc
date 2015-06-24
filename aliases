@@ -31,7 +31,7 @@ function gitacp { git add -A; git commit -m "$1"; git push origin master; }
 function gitcp { git commit -m "$1" ; git push origin master; }
 
 # Mercurial aliases
-function hg-clone { hg clone ssh://hg@ss2:/$1; }
+function hg-clone { hg clone ssh://hg@spliceserver2:/$1; }
 alias hgs='hg st'
 alias hga='hg add'
 alias hgan='hg add -n'
