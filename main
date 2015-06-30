@@ -35,11 +35,9 @@ assert-path "/bin"
 assert-path "/usr/bin"
 assert-path "/usr/local/bin"
 
-if [ "$USER" == "root" ]; then
-	assert-path "/sbin"
-	assert-path "/usr/sbin"
-	assert-path "/usr/local/sbin"
-fi
+assert-path "/sbin"
+assert-path "/usr/sbin"
+assert-path "/usr/local/sbin"
 
 # EC2 Environment
 una=`uname -a`
