@@ -24,6 +24,23 @@ if [ "$USER" == "" ]; then
         USER="${USERNAME}"
 fi
 
+function assert-path {
+	if [ -d "$1" ]; then
+		if ! echo ":${PATH}:" | grep -q ":${1}:"; then PATH=$PATH:$1 ; fi
+	fi
+}
+
+assert-path "${HOME}/bin"
+assert-path "/bin"
+assert-path "/usr/bin"
+assert-path "/usr/local/bin"
+
+if [ "$USER" == "root" ]; then
+	assert-path "/sbin"
+	assert-path "/usr/sbin"
+	assert-path "/usr/local/sbin"
+fi
+
 # EC2 Environment
 una=`uname -a`
 if echo "$una" | grep "amzn" > /dev/null; then
