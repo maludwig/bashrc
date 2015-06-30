@@ -87,6 +87,7 @@ alias play='ansible-playbook'
 alias work='cd $WORK_HOME'
 
 # Common functions 
+alias rsync-sudo='rsync -e "ssh" --rsync-path="sudo rsync"'
 function clean-comments { cat "$1" | grep -Ev "^\s*;"; }
 alias sync-time='ntpdate pool.ntp.org'
 function fix-time { ntpdate time.nist.gov; chkconfig ntpd on; service ntpd start; }
