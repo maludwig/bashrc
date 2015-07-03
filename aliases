@@ -46,6 +46,7 @@ alias hgpull='hg pull -u'
 # Package Manager aliases
 alias ag='apt-get -y install'
 alias ags='apt-get -s install'
+alias agu='apt-get upgrade'
 alias agli='apt --installed list'
 alias aglg='apt list | grep'
 alias yumi='yum -y install'
