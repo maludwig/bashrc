@@ -34,7 +34,7 @@ function bashrc-update { cd $BASHRC_DIR; gitpull; . main; }
 
 # Mercurial aliases
 function hg-clone { hg clone ssh://hg@spliceserver2:/$1; }
-alias hgs='hg st'
+alias hgs='hg st | grep -vE "^\?"'
 alias hga='hg add'
 alias hgan='hg add -n'
 alias hgc='hg commit -m'
