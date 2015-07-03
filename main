@@ -24,6 +24,21 @@ if [ "$USER" == "" ]; then
         USER="${USERNAME}"
 fi
 
+function assert-path {
+	if [ -d "$1" ]; then
+		if ! echo ":${PATH}:" | grep -q ":${1}:"; then PATH=$PATH:$1 ; fi
+	fi
+}
+
+assert-path "${HOME}/bin"
+assert-path "/bin"
+assert-path "/usr/bin"
+assert-path "/usr/local/bin"
+
+assert-path "/sbin"
+assert-path "/usr/sbin"
+assert-path "/usr/local/sbin"
+
 # EC2 Environment
 una=`uname -a`
 if echo "$una" | grep "amzn" > /dev/null; then
@@ -40,10 +55,10 @@ fi
 PS1="${CUSER}\u@${CYELLOW}${HOST_ALIAS}:${CGREEN}\w${CDEFAULT}\n$ "
 case $TERM in
         xterm*)
-                PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOST_ALIAS}:${PWD/#$HOME/~}"; echo -ne "\007"'
+                PROMPT_COMMAND='echo -ne "\033]0;${HOST_ALIAS}:${PWD/#$HOME/~}"; echo -ne "\007"'
                 ;;
         screen)
-                PROMPT_COMMAND='echo -ne "\033_${USER}@${HOST_ALIAS}:${PWD/#$HOME/~}"; echo -ne "\033\\"'
+                PROMPT_COMMAND='echo -ne "\033_${HOST_ALIAS}:${PWD/#$HOME/~}"; echo -ne "\033\\"'
                 ;;
         cygwin)
                 #PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOST_ALIAS}:${PWD/#$HOME/~}"; echo -ne "\007"'
