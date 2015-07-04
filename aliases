@@ -1,6 +1,6 @@
 # User specific aliases and functions
 # Bash aliases
-alias ll='ls -lah'
+alias ll='ls -lah --color'
 alias l='ls --color'
 alias w='cd /var/www/html'
 alias x='vim /etc/asterisk/extensions.conf'
