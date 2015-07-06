@@ -4,6 +4,7 @@ alias ll='ls -lah --color'
 alias ll-sort-size='ll -S'
 alias l='ls --color'
 alias w='cd /var/www/html'
+alias wr='cd ~/Work/realtalk'
 alias x='vim /etc/asterisk/extensions.conf'
 alias s='vim /etc/asterisk/sip.conf'
 function md { mkdir $1; cd $1; }
