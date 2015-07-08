@@ -1,8 +1,11 @@
+#!/bin/bash
 # Network name
 export PUBLICIP=$(curl http://169.254.169.254/latest/meta-data/public-ipv4 2> /dev/null)
 export INSTANCEID=`curl 169.254.169.254/latest/meta-data/instance-id 2> /dev/null`
-if [ -f ~/.aws/config ]; then
-	INSTANCENAME=`aws ec2 describe-tags --filters "Name=resource-id,Values=$INSTANCEID"`
+export EC2_AVAIL_ZONE=`curl -s http://169.254.169.254/latest/meta-data/placement/availability-zone`
+export EC2_REGION="`echo \"$EC2_AVAIL_ZONE\" | sed -e 's:\([0-9][0-9]*\)[a-z]*\$:\\1:'`"
+INSTANCENAME=`aws ec2 describe-tags --region=${EC2_REGION} --filters "Name=resource-id,Values=$INSTANCEID" 2> /dev/null`
+if [ ! "INSTANCENAME" == "" ]; then
 	export INSTANCENAME=`echo $INSTANCENAME | sed 's/.*Value": "\([^"]*\)".*/\1/'`
 	export HOST_ALIAS="${INSTANCENAME}"
 fi

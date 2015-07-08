@@ -1,3 +1,4 @@
+#!/bin/bash
 # User specific aliases and functions
 # Bash aliases
 alias ll='ls -lah --color'

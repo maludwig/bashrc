@@ -1,3 +1,4 @@
+#!/bin/bash
 # Source global bashrc
 if [ -f /etc/bashrc ]; then
 	. /etc/bashrc

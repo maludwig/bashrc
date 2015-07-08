@@ -1,3 +1,4 @@
+#!/bin/bash
 # Record this directory for later reference
 if echo $BASH_SOURCE | grep -E "^/" > /dev/null; then
 	BASHRC_DIR="${BASH_SOURCE/\/main/}"
