@@ -26,7 +26,7 @@ else:
 instream = args.file
 outstream = args.output;
 
-print "Replace: |%s|" % args.replace
+sys.stderr.write("Replace: |%s|" % args.replace)
 if args.replace:
 	# REPLACERS
 	for line in instream.readlines():
