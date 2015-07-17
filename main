@@ -39,6 +39,7 @@ assert-path "/usr/local/bin"
 assert-path "/sbin"
 assert-path "/usr/sbin"
 assert-path "/usr/local/sbin"
+assert-path "/opt/python2.7/bin"
 
 # EC2 Environment
 una=`uname -a`
