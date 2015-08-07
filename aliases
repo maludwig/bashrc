@@ -93,7 +93,8 @@ alias work='cd $WORK_HOME'
 # Common functions 
 alias rsync-sudo='rsync -e "ssh" --rsync-path="sudo rsync"'
 alias rsync-ext="rsync -am --include='*.tar.gz' --include='*/' --exclude='*'"
-alias rsync-sudo-ext="rsync -e 'ssh' --rsync-path='sudo rsync' -am --include='*.tar.gz' --include='*/' --exclude='*'"
+function rsync-sudo-ext { rsync -av -e 'ssh' --rsync-path='sudo rsync' -am --include="$1" --include='*/' --exclude='*' $2 $3; }
+
 function clean-comments { cat "$1" | grep -Ev "^\s*;"; }
 alias sync-time='ntpdate pool.ntp.org'
 function fix-time { ntpdate time.nist.gov; chkconfig ntpd on; service ntpd start; }
@@ -160,6 +161,10 @@ function setup-ssh-creds {
 }
 function date-today { echo $(date +%F); }
 function date-second { echo $(date +%F_%H-%M-%S); }
+function generate-ssh-key {
+	ask-default 'What username will this key be for?' "$1"
+	ssh-keygen -t rsa -b 4096 -C "$ASK - $(date +%F)";
+}
 function set-host-alias { ask-default "Enter a host alias for this machine" "$HOST_ALIAS"; echo 'export HOST_ALIAS="'${ASK}'"' > $BASHRC_DIR/hostvars; . $BASHRC_DIR/hostvars; }
 
 # Login aliases
