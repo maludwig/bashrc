@@ -92,6 +92,8 @@ alias work='cd $WORK_HOME'
 
 # Common functions 
 alias rsync-sudo='rsync -e "ssh" --rsync-path="sudo rsync"'
+alias rsync-ext="rsync -am --include='*.tar.gz' --include='*/' --exclude='*'"
+alias rsync-sudo-ext="rsync -e 'ssh' --rsync-path='sudo rsync' -am --include='*.tar.gz' --include='*/' --exclude='*'"
 function clean-comments { cat "$1" | grep -Ev "^\s*;"; }
 alias sync-time='ntpdate pool.ntp.org'
 function fix-time { ntpdate time.nist.gov; chkconfig ntpd on; service ntpd start; }
@@ -101,9 +103,15 @@ alias regex='$BASHRC_DIR/regex.py'
 function regex-lineswap { sed -i '/'"$1"'/c\'"$2" "$3"; }
 function allow-ssh-root-login { regex-lineswap '^PermitRootLogin' 'PermitRootLogin without-password' /etc/ssh/sshd_config; service sshd restart; }
 alias edit-bashrc='cd $BASHRC_DIR; vim'
+
+function ask { echo -ne "${CYELLOW} $1: ${CDEFAULT}"; read ASK; export ASK; }
 function ask-default { echo -ne "${CYELLOW} $1 [$2]: ${CDEFAULT}"; read ASK; export ASK=${ASK:-$2}; }
 function ask-yes { echo -ne "${CYELLOW} $1 [Y/n]: ${CDEFAULT}"; read ASK; export ASK=${ASK:-y}; }
 function ask-no { echo -ne "${CYELLOW} $1 [y/N]: ${CDEFAULT}"; read ASK; export ASK=${ASK:-n}; }
+function msg-error { echo -e "${CRED}${1}${CDEFAULT}"; }
+function msg-info { echo -e "${CCYAN}${1}${CDEFAULT}"; }
+function msg-success { echo -e "${CGREEN}${1}${CDEFAULT}"; }
+
 function setup-ssh-login { 
 	if [ ! -d ~/.ssh ]; then 
 		mkdir ~/.ssh; 
