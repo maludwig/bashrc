@@ -91,9 +91,9 @@ alias play='ansible-playbook'
 alias work='cd $WORK_HOME'
 
 # Common functions 
-alias rsync-sudo='rsync -e "ssh" --rsync-path="sudo rsync"'
-alias rsync-ext="rsync -am --include='*.tar.gz' --include='*/' --exclude='*'"
-function rsync-sudo-ext { rsync -av -e 'ssh' --rsync-path='sudo rsync' -am --include="$1" --include='*/' --exclude='*' $2 $3; }
+alias rsync-sudo='rsync -e "ssh" --progress --rsync-path="sudo rsync"'
+function rsync-ext { rsync -amv --progress --include="$1" --include='*/' --exclude='*' $2 $3; }
+function rsync-sudo-ext { rsync -e 'ssh' --rsync-path='sudo rsync' -amv --progress --include="$1" --include='*/' --exclude='*' $2 $3; }
 
 function clean-comments { cat "$1" | grep -Ev "^\s*;"; }
 alias sync-time='ntpdate pool.ntp.org'
