@@ -92,8 +92,12 @@ alias work='cd $WORK_HOME'
 
 # Common functions 
 alias rsync-sudo='rsync -e "ssh" --progress --rsync-path="sudo rsync"'
-function rsync-ext { rsync -amv --progress --include="$1" --include='*/' --exclude='*' $2 $3; }
-function rsync-sudo-ext { rsync -e 'ssh' --rsync-path='sudo rsync' -amv --progress --include="$1" --include='*/' --exclude='*' $2 $3; }
+alias rsync-limited='rsync --progress --bwlimit=1000'
+alias rsync-sudo-limited='rsync-sudo --bwlimit=1000'
+function rsync-ext {                           rsync -amv --progress --include="$1" --include='*/' --exclude='*' $2 $3; }
+function rsync-sudo-ext {                 rsync-sudo -amv --progress --include="$1" --include='*/' --exclude='*' $2 $3; }
+function limited-rsync-ext {           rsync-limited -amv --progress --include="$1" --include='*/' --exclude='*' $2 $3; }
+function limited-rsync-sudo-ext { rsync-sudo-limited -amv --progress --include="$1" --include='*/' --exclude='*' $2 $3; }
 
 function clean-comments { cat "$1" | grep -Ev "^\s*;"; }
 alias sync-time='ntpdate pool.ntp.org'
