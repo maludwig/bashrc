@@ -61,6 +61,7 @@ function hg-clone { hg clone ssh://hg@spliceserver2:/$1; }
 alias hgs='hg st | grep -vE "^\?"'
 alias hga='hg add'
 alias hgan='hg add -n'
+alias hgar='hg addremove'
 alias hgc='hg commit -m'
 alias hgch='hg update -c'
 alias hgchb='hg branch'
