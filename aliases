@@ -21,6 +21,27 @@ alias mqd="mysqldump -uroot -p'$RDSPASS'"
 alias mq-rds="mysql -uroot -p'$RDSPASS' -h'$RDSHOST'"
 alias mqd-rds="mysqldump -uroot -p'$RDSPASS' -h'$RDSHOST'"
 
+# Django aliases
+function dm-path {
+cwd="$(pwd)"
+while [ ! -f manage.py ]; do
+if [ "$(pwd)" == "/" ]; then
+echo Hit the root.
+break;
+fi
+cd ..
+done
+if [ -f manage.py ]; then
+echo $(pwd)/manage.py
+else
+cd "$cwd"
+fi
+}
+alias dm='$(dm-path)'
+alias dm-runserver='dm runserver 0.0.0.0:8000'
+alias dm-startapp='dm startapp'
+
+
 # Git aliases
 alias gits='git status'
 alias gita='git add -A'
