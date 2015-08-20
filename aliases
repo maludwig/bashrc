@@ -11,6 +11,8 @@ alias s='vim /etc/asterisk/sip.conf'
 function md { mkdir $1; cd $1; }
 alias ..='cd ..'
 alias cd..='cd ..'
+function echo-err { echo "$@" 1>&2; }
+echo-err hello world
 
 # Log aliases
 alias tail-httpd="tail -n20 /var/log/httpd/error_log"
