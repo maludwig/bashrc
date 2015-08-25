@@ -11,7 +11,10 @@ alias s='vim /etc/asterisk/sip.conf'
 function md { mkdir $1; cd $1; }
 alias ..='cd ..'
 alias cd..='cd ..'
+
+function date-8601 { date -u +%Y-%m-%dT%H:%M:%S%z; }
 function echo-err { echo "$@" 1>&2; }
+function log-8601 { echo "[ $(date-8601) ] $@"; }
 
 # Log aliases
 alias tail-httpd="tail -n20 /var/log/httpd/error_log"
