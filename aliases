@@ -43,8 +43,9 @@ cd "$cwd"
 fi
 }
 alias dm='$(dm-path)'
-alias dm-runserver='dm runserver 0.0.0.0:8000'
+alias dm-runserver='dm runserver 0.0.0.0:80'
 alias dm-startapp='dm startapp'
+alias dm-migrate='dm migrate'
 
 
 # Git aliases
