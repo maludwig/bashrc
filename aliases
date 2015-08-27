@@ -12,9 +12,10 @@ function md { mkdir $1; cd $1; }
 alias ..='cd ..'
 alias cd..='cd ..'
 
-function date-8601 { date -u +%Y-%m-%dT%H:%M:%S%z; }
 function echo-err { echo "$@" 1>&2; }
+function date-8601 { date -u +%Y-%m-%dT%H:%M:%S%z; }
 function log-8601 { echo "[ $(date-8601) ] $@"; }
+function log-err-8601 { echo-err "[ $(date-8601) ] $@"; }
 
 # Log aliases
 alias tail-httpd="tail -n20 /var/log/httpd/error_log"
@@ -73,14 +74,15 @@ alias hgpush='hg push'
 alias hgpull='hg pull -u'
 
 # Package Manager aliases
-alias ag='apt-get -y install'
-alias ags='apt-get -s install'
-alias agu='apt-get upgrade'
+alias ag='sudo apt-get -y install'
+alias ags='sudo apt-get -s install'
+alias agu='sudo apt-get upgrade'
 alias agli='apt --installed list'
 alias aglg='apt list | grep'
-alias yumi='yum -y install'
+alias yumi='sudo yum -y install'
 alias yumlg='yum list | grep'
-alias yumu='yum -y update'
+alias yumli='yum list installed | grep'
+alias yumu='sudo yum -y update'
 alias pipi='pip install'
 alias pipu='pip install --upgrade'
 alias piplg='pip search'
