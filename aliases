@@ -11,6 +11,7 @@ alias s='vim /etc/asterisk/sip.conf'
 function md { mkdir $1; cd $1; }
 alias ..='cd ..'
 alias cd..='cd ..'
+alias susu='sudo su'
 
 function echo-err { echo "$@" 1>&2; }
 function date-8601 { date -u +%Y-%m-%dT%H:%M:%S%z; }
@@ -131,6 +132,7 @@ function limited-rsync-sudo-ext { rsync-sudo-limited -amv --progress --include="
 function clean-comments { cat "$1" | grep -Ev "^\s*;"; }
 alias sync-time='ntpdate pool.ntp.org'
 function fix-time { ntpdate time.nist.gov; chkconfig ntpd on; service ntpd start; }
+function mst-time { if [ -f "/usr/share/zoneinfo/America/Edmonton" ]; then rm -f /etc/localtime; ln -fs /usr/share/zoneinfo/America/Edmonton /etc/localtime; fi; }
 alias encrypt-file='gpg --cipher-algo AES256 --symmetric $1'
 alias decrypt-file='gpg'
 alias regex='$BASHRC_DIR/regex.py'
@@ -142,9 +144,12 @@ function ask { echo -ne "${CYELLOW} $1: ${CDEFAULT}"; read ASK; export ASK; }
 function ask-default { echo -ne "${CYELLOW} $1 [$2]: ${CDEFAULT}"; read ASK; export ASK=${ASK:-$2}; }
 function ask-yes { echo -ne "${CYELLOW} $1 [Y/n]: ${CDEFAULT}"; read ASK; export ASK=${ASK:-y}; }
 function ask-no { echo -ne "${CYELLOW} $1 [y/N]: ${CDEFAULT}"; read ASK; export ASK=${ASK:-n}; }
-function msg-error { echo -e "${CRED}${1}${CDEFAULT}"; }
-function msg-info { echo -e "${CCYAN}${1}${CDEFAULT}"; }
-function msg-success { echo -e "${CGREEN}${1}${CDEFAULT}"; }
+function ask-enter { echo -e "${CYELLOW} $1: [Press enter to continue]${CDEFAULT}" ; read; }
+
+function msg-error { echo -e "${CRED}${@}${CDEFAULT}"; }
+function msg-info { echo -e "${CCYAN}${@}${CDEFAULT}"; }
+function msg-success { echo -e "${CGREEN}${@}${CDEFAULT}"; }
+function msg-dry { echo -e "${CPINK}${@}${CDEFAULT}"; }
 
 function setup-ssh-login { 
 	if [ ! -d ~/.ssh ]; then 
