@@ -151,6 +151,15 @@ function msg-info { echo -e "${CCYAN}${@}${CDEFAULT}"; }
 function msg-success { echo -e "${CGREEN}${@}${CDEFAULT}"; }
 function msg-dry { echo -e "${CPINK}${@}${CDEFAULT}"; }
 
+#Warning: resets permissions
+function prepend { 
+if [ -f "$2" ]; then
+echo "$1" | cat - "$2" > /tmp/prepend && mv /tmp/prepend "$2"; 
+else
+echo "$1" > "$2"
+fi
+}
+
 function setup-ssh-login { 
 	if [ ! -d ~/.ssh ]; then 
 		mkdir ~/.ssh; 
@@ -221,6 +230,8 @@ function ensure_running_agent {
 		start_agent;
 	fi
 }
+function prepend-ssh-agent-forwarding { prepend "ForwardAgent yes" ~/.ssh/config; }
+
 function date-today { echo $(date +%F); }
 function date-second { echo $(date +%F_%H-%M-%S); }
 function generate-ssh-key {
