@@ -11,7 +11,8 @@ alias s='vim /etc/asterisk/sip.conf'
 function md { mkdir $1; cd $1; }
 alias ..='cd ..'
 alias cd..='cd ..'
-alias susu='sudo su'
+function susu { sudo su; if [ $? == 1 ]; then exit 1; fi; }
+alias die='exit 1'
 
 function echo-err { echo "$@" 1>&2; }
 function date-8601 { date -u +%Y-%m-%dT%H:%M:%S%z; }
@@ -47,6 +48,7 @@ alias dm='$(dm-path)'
 alias dm-runserver='dm runserver 0.0.0.0:80'
 alias dm-startapp='dm startapp'
 alias dm-migrate='dm migrate'
+alias dm-mig='dm makemigrations; dm migrate'
 
 
 # Git aliases
