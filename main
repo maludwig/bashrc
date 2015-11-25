@@ -57,10 +57,10 @@ fi
 PS1="${CUSER}\u@${CYELLOW}${HOST_ALIAS}:${CGREEN}\w${CDEFAULT}\n$ "
 case $TERM in
         xterm*)
-                PROMPT_COMMAND='echo -ne "\033]0;${HOST_ALIAS}:${PWD/#$HOME/~}"; echo -ne "\007"'
+                PROMPT_COMMAND='echo -ne "\033]0;${HOST_ALIAS}:${PWD/#$HOME/~}"; echo -ne "\007"; echo -ne "${CCYAN}[$(date-8601)]: ${CDEFAULT}";'
                 ;;
         screen)
-                PROMPT_COMMAND='echo -ne "\033_${HOST_ALIAS}:${PWD/#$HOME/~}"; echo -ne "\033\\"'
+                PROMPT_COMMAND='echo -ne "\033_${HOST_ALIAS}:${PWD/#$HOME/~}"; echo -ne "\033\\"; echo -ne "${CCYAN}[$(date-8601)]: ${CDEFAULT}";'
                 ;;
         cygwin)
                 #PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOST_ALIAS}:${PWD/#$HOME/~}"; echo -ne "\007"'
