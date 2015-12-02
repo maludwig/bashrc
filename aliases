@@ -6,8 +6,16 @@ alias ll-sort-size='ll -S'
 alias l='ls --color'
 alias w='cd /var/www/html'
 alias wr='cd ~/Work/realtalk'
-alias x='vim /etc/asterisk/extensions.conf'
-alias s='vim /etc/asterisk/sip.conf'
+
+alias cda='cd /etc/asterisk'
+alias cdh='cd /etc/httpd'
+alias cdhc='cd /etc/httpd/conf'
+alias cdhcd='cd /etc/httpd/conf.d'
+alias cdid='cd /etc/init.d'
+alias cdj='cd /splice/software/javaOutgoing'
+alias cdt='cd /splice/software/testcalls'
+alias cdr='cd /splice/local/lib/realtalk360'
+
 function md { mkdir $1; cd $1; }
 alias ..='cd ..'
 alias cd..='cd ..'
