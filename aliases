@@ -253,10 +253,34 @@ function prepend-ssh-agent-forwarding { prepend "ForwardAgent yes" ~/.ssh/config
 
 function date-today { echo $(date +%F); }
 function date-second { echo $(date +%F_%H-%M-%S); }
+
 function generate-ssh-key {
+	cd ~/.ssh
 	ask-default 'What username will this key be for?' "$USER"
-	ssh-keygen -t rsa -b 4096 -C "$ASK - $(date +%F)" -f "$ASK-$(date +%F)";
+	FILENAME="$ASK-$(date +%F)";
+	ssh-keygen -t rsa -b 4096 -C "$ASK - $(date +%F)" -f "$FILENAME";
+	msg-info "Your public key is below, you can share this with anyone, but keep your private key safe";
+	cat "$FILENAME.pub";
+	ask-yes "Shall I add this new key ($FILENAME) to ~/.ssh/config for you?";
+	if [ "$ASK" != "n" ]; then
+		prepend "IdentityFile ~/.ssh/$FILENAME" ~/.ssh/config;
+		msg-success "Added identity to config"
+	fi
+	grep -q "ensure_running_agent" ~/.bashrc
+	if [ $? != 0 ]; then
+		ask-yes "It looks like you are not running the ssh-agent. Shall I add it to your bashrc?"
+		if [ "$ASK" != "n" ]; then
+			echo "ensure_running_agent" >> ~/.bashrc;
+			msg-success "Added agent to bashrc"
+		fi
+	fi
+	ask-yes "Shall I add this new key ($FILENAME) to ~/.bashrc for you?";
+	if [ "$ASK" != "n" ]; then
+		echo "ssh-add ~/.ssh/$FILENAME" >> ~/.bashrc;
+		msg-success "Added key to agent"
+	fi
 }
+
 function set-host-alias { ask-default "Enter a host alias for this machine" "$HOST_ALIAS"; echo 'export HOST_ALIAS="'${ASK}'"' > $BASHRC_DIR/hostvars; . $BASHRC_DIR/hostvars; }
 
 # Login aliases
