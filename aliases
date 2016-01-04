@@ -16,6 +16,7 @@ alias die='exit 1'
 
 function echo-err { echo "$@" 1>&2; }
 function date-8601 { date -u +%Y-%m-%dT%H:%M:%S%z; }
+function date-8601-local { date +%Y-%m-%dT%H:%M:%S%z; }
 function log-8601 { echo "[ $(date-8601) ] $@"; }
 function log-err-8601 { echo-err "[ $(date-8601) ] $@"; }
 
