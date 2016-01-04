@@ -1,24 +1,51 @@
 #!/bin/bash
 # User specific aliases and functions
-# Bash aliases
-alias ll='ls -lah --color'
-alias ll-sort-size='ll -S'
-alias l='ls --color'
-alias w='cd /var/www/html'
-alias wr='cd ~/Work/realtalk'
-alias x='vim /etc/asterisk/extensions.conf'
-alias s='vim /etc/asterisk/sip.conf'
-function md { mkdir $1; cd $1; }
-alias ..='cd ..'
-alias cd..='cd ..'
-function susu { sudo su "${@}"; if [ $? == 1 ]; then exit 1; fi; }
-alias die='exit 1'
+
+# Script include
 
 function echo-err { echo "$@" 1>&2; }
 function date-8601 { date -u +%Y-%m-%dT%H:%M:%S%z; }
 function date-8601-local { date +%Y-%m-%dT%H:%M:%S%z; }
 function log-8601 { echo "[ $(date-8601) ] $@"; }
 function log-err-8601 { echo-err "[ $(date-8601) ] $@"; }
+
+function ask { echo -ne "${CYELLOW} $1: ${CDEFAULT}"; read ASK; export ASK; }
+function ask-default { echo -ne "${CYELLOW} $1 [$2]: ${CDEFAULT}"; read ASK; export ASK=${ASK:-$2}; }
+function ask-yes { echo -ne "${CYELLOW} $1 [Y/n]: ${CDEFAULT}"; read ASK; export ASK=${ASK:-y}; }
+function ask-no { echo -ne "${CYELLOW} $1 [y/N]: ${CDEFAULT}"; read ASK; export ASK=${ASK:-n}; }
+function ask-enter { echo -e "${CYELLOW} $1: [Press enter to continue]${CDEFAULT}" ; read; }
+
+function msg-error { echo -e "${CRED}${@}${CDEFAULT}"; }
+function msg-info { echo -e "${CCYAN}${@}${CDEFAULT}"; }
+function msg-success { echo -e "${CGREEN}${@}${CDEFAULT}"; }
+function msg-dry { echo -e "${CPINK}${@}${CDEFAULT}"; }
+
+
+
+# Bash aliases
+alias ll='ls -lah --color'
+alias ll-sort-size='ll -S'
+alias l='ls --color'
+alias w='cd /var/www/html'
+alias wr='cd ~/Work/realtalk'
+
+alias cda='cd /etc/asterisk'
+alias cdh='cd /etc/httpd'
+alias cdhc='cd /etc/httpd/conf'
+alias cdhcd='cd /etc/httpd/conf.d'
+alias cdid='cd /etc/init.d'
+alias cdj='cd /splice/software/javaOutgoing'
+alias cdt='cd /splice/software/testcalls'
+alias cdr='cd /splice/local/lib/realtalk360'
+
+alias cdla='cd /var/log/asterisk'
+alias cdlh='cd /var/log/httpd'
+
+function md { mkdir $1; cd $1; }
+alias ..='cd ..'
+alias cd..='cd ..'
+function susu { sudo su "${@}"; if [ $? == 1 ]; then exit 1; fi; }
+alias die='exit 1'
 
 # Log aliases
 alias tail-httpd="tail -n20 /var/log/httpd/error_log"
@@ -93,7 +120,8 @@ alias pipu='pip install --upgrade'
 alias piplg='pip search'
 
 # Service aliases
-function sr { service $1 restart; }
+function sr { service "$1" restart; }
+function srv { service "$2" "$1"; }
 alias srh='sr httpd'
 alias sra='sr apache2'
 alias srm='sr mysqld'
@@ -142,17 +170,6 @@ alias regex='$BASHRC_DIR/regex.py'
 function regex-lineswap { sed -i '/'"$1"'/c\'"$2" "$3"; }
 function allow-ssh-root-login { regex-lineswap '^PermitRootLogin' 'PermitRootLogin without-password' /etc/ssh/sshd_config; service sshd restart; }
 alias edit-bashrc='cd $BASHRC_DIR; vim'
-
-function ask { echo -ne "${CYELLOW} $1: ${CDEFAULT}"; read ASK; export ASK; }
-function ask-default { echo -ne "${CYELLOW} $1 [$2]: ${CDEFAULT}"; read ASK; export ASK=${ASK:-$2}; }
-function ask-yes { echo -ne "${CYELLOW} $1 [Y/n]: ${CDEFAULT}"; read ASK; export ASK=${ASK:-y}; }
-function ask-no { echo -ne "${CYELLOW} $1 [y/N]: ${CDEFAULT}"; read ASK; export ASK=${ASK:-n}; }
-function ask-enter { echo -e "${CYELLOW} $1: [Press enter to continue]${CDEFAULT}" ; read; }
-
-function msg-error { echo -e "${CRED}${@}${CDEFAULT}"; }
-function msg-info { echo -e "${CCYAN}${@}${CDEFAULT}"; }
-function msg-success { echo -e "${CGREEN}${@}${CDEFAULT}"; }
-function msg-dry { echo -e "${CPINK}${@}${CDEFAULT}"; }
 
 #Warning: resets permissions
 function prepend { 
@@ -237,10 +254,34 @@ function prepend-ssh-agent-forwarding { prepend "ForwardAgent yes" ~/.ssh/config
 
 function date-today { echo $(date +%F); }
 function date-second { echo $(date +%F_%H-%M-%S); }
+
 function generate-ssh-key {
-	ask-default 'What username will this key be for?' "$1"
-	ssh-keygen -t rsa -b 4096 -C "$ASK - $(date +%F)";
+	cd ~/.ssh
+	ask-default 'What username will this key be for?' "$USER"
+	FILENAME="$ASK-$(date +%F)";
+	ssh-keygen -t rsa -b 4096 -C "$ASK - $(date +%F)" -f "$FILENAME";
+	msg-info "Your public key is below, you can share this with anyone, but keep your private key safe";
+	cat "$FILENAME.pub";
+	ask-yes "Shall I add this new key ($FILENAME) to ~/.ssh/config for you?";
+	if [ "$ASK" != "n" ]; then
+		prepend "IdentityFile ~/.ssh/$FILENAME" ~/.ssh/config;
+		msg-success "Added identity to config"
+	fi
+	grep -q "ensure_running_agent" ~/.bashrc
+	if [ $? != 0 ]; then
+		ask-yes "It looks like you are not running the ssh-agent. Shall I add it to your bashrc?"
+		if [ "$ASK" != "n" ]; then
+			echo "ensure_running_agent" >> ~/.bashrc;
+			msg-success "Added agent to bashrc"
+		fi
+	fi
+	ask-yes "Shall I add this new key ($FILENAME) to ~/.bashrc for you?";
+	if [ "$ASK" != "n" ]; then
+		echo "ssh-add ~/.ssh/$FILENAME" >> ~/.bashrc;
+		msg-success "Added key to agent"
+	fi
 }
+
 function set-host-alias { ask-default "Enter a host alias for this machine" "$HOST_ALIAS"; echo 'export HOST_ALIAS="'${ASK}'"' > $BASHRC_DIR/hostvars; . $BASHRC_DIR/hostvars; }
 
 # Login aliases
