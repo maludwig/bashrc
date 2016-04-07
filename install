@@ -1,0 +1,5 @@
+#!/bin/bash
+mkdir /etc/bashrc.extensions
+cp -r * /etc/bashrc.extensions/
+echo "source /etc/bashrc.extensions/main" >> /etc/bashrc
+
