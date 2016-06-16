@@ -4,6 +4,9 @@
 # Script include
 
 function echo-err { echo "$@" 1>&2; }
+
+function date-today { echo $(date +%F); }
+function date-second { echo $(date +%F_%H-%M-%S); }
 function date-8601 { date -u +%Y-%m-%dT%H:%M:%S%z; }
 function date-8601-local { date +%Y-%m-%dT%H:%M:%S%z; }
 function log-8601 { echo "[ $(date-8601) ] $@"; }
@@ -11,8 +14,8 @@ function log-err-8601 { echo-err "[ $(date-8601) ] $@"; }
 
 function ask { echo -ne "${CYELLOW} $1: ${CDEFAULT}"; read ASK; export ASK; }
 function ask-default { echo -ne "${CYELLOW} $1 [$2]: ${CDEFAULT}"; read ASK; export ASK=${ASK:-$2}; }
-function ask-yes { echo -ne "${CYELLOW} $1 [Y/n]: ${CDEFAULT}"; read ASK; export ASK=${ASK:-y}; }
-function ask-no { echo -ne "${CYELLOW} $1 [y/N]: ${CDEFAULT}"; read ASK; export ASK=${ASK:-n}; }
+function ask-yes { echo -ne "${CYELLOW} $1 [Y/n]: ${CDEFAULT}"; read ASK; ASK="$(echo $ASK | tr '[:upper:]' '[:lower:]')"; export ASK=${ASK:-y}; }
+function ask-no { echo -ne "${CYELLOW} $1 [y/N]: ${CDEFAULT}"; read ASK; ASK="$(echo $ASK | tr '[:upper:]' '[:lower:]')"; export ASK=${ASK:-n}; }
 function ask-enter { echo -e "${CYELLOW} $1: [Press enter to continue]${CDEFAULT}" ; read; }
 
 function msg-error { echo -e "${CRED}${@}${CDEFAULT}"; }
@@ -20,6 +23,7 @@ function msg-info { echo -e "${CCYAN}${@}${CDEFAULT}"; }
 function msg-success { echo -e "${CGREEN}${@}${CDEFAULT}"; }
 function msg-dry { echo -e "${CPINK}${@}${CDEFAULT}"; }
 
+function each-line { for var in "$@"; do echo "$var"; done; }
 
 
 # Bash aliases
@@ -28,6 +32,8 @@ alias ll-sort-size='ll -S'
 alias l='ls --color'
 alias w='cd /var/www/html'
 alias wr='cd ~/Work/realtalk'
+
+alias vsci='sudo vim /splice/software/javaOutgoing/SplashCall.ini'
 
 alias cda='cd /etc/asterisk'
 alias cdh='cd /etc/httpd'
@@ -123,7 +129,7 @@ alias piplg='pip search'
 function sr { service "$1" restart; }
 function srv { service "$2" "$1"; }
 alias srh='sr httpd'
-alias sra='sr apache2'
+alias sra='sr asterisk'
 alias srm='sr mysqld'
 alias srn='sr neo4j-service'
 alias srs='sr smb'
@@ -252,8 +258,6 @@ function ensure_running_agent {
 }
 function prepend-ssh-agent-forwarding { prepend "ForwardAgent yes" ~/.ssh/config; }
 
-function date-today { echo $(date +%F); }
-function date-second { echo $(date +%F_%H-%M-%S); }
 
 function generate-ssh-key {
 	cd ~/.ssh
