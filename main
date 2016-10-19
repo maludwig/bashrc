@@ -41,6 +41,8 @@ assert-path "/usr/sbin"
 assert-path "/usr/local/sbin"
 assert-path "/opt/python2.7/bin"
 
+assert-path "$BASHRC_DIR/bin"
+
 # EC2 Environment
 una=`uname -a`
 if echo "$una" | grep "amzn" > /dev/null; then
