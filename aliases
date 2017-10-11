@@ -36,6 +36,7 @@ alias ll-sort-size='ll -S'
 alias l='ls --color'
 alias w='cd /var/www/html'
 alias wr='cd ~/Work/realtalk'
+alias f='grep -R'
 
 alias vsci='sudo vim /splice/software/javaOutgoing/SplashCall.ini'
 
@@ -82,7 +83,7 @@ else
 cd "$cwd"
 fi
 }
-alias dm='$(dm-path)'
+alias dm='python $(dm-path)'
 alias dm-runserver='dm runserver 0.0.0.0:80'
 alias dm-startapp='dm startapp'
 alias dm-migrate='dm migrate'
@@ -114,6 +115,33 @@ alias hgch='hg update -c'
 alias hgchb='hg branch'
 alias hgpush='hg push'
 alias hgpull='hg pull -u'
+alias hgb='hg branch'
+alias hgheads='hg heads .'
+function hgpbn {
+    if [ "$#" == "1" ]; then
+        hg push --branch "SPLICE-$1" --new-branch
+    else
+        hg push -r . --new-branch
+    fi
+}
+function hgpb {
+    if [ "$#" == "1" ]; then
+        hg push --branch "SPLICE-$1"
+    else
+        hg push -r .
+    fi
+}
+function hgub {
+    if [ "$#" == "1" ]; then
+        hg update -r "SPLICE-$1"
+    fi
+}
+function hgcpb {
+    hgc "$1"
+    hgpb
+}
+
+
 
 # Package Manager aliases
 alias ag='sudo apt-get -y install'
