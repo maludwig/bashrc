@@ -1,5 +1,9 @@
 #!/bin/bash
 mkdir /etc/bashrc.extensions
 cp -r * /etc/bashrc.extensions/
-echo "source /etc/bashrc.extensions/main" >> /etc/bashrc
+if [ -f /etc/bashrc ]; then
+  echo "source /etc/bashrc.extensions/main" >> /etc/bashrc
+elif [ -f /etc/bash.bashrc ]; then
+  echo "source /etc/bashrc.extensions/main" >> /etc/bash.bashrc
+fi
 
