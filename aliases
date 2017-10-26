@@ -97,11 +97,11 @@ alias gitan='git add -An'
 alias gitc='git commit -m'
 alias gitch='git checkout'
 alias gitchb='git checkout -b'
-alias gitpush='git push origin master'
-alias gitpull='git pull origin master'
+alias gitpush='git push origin HEAD'
+alias gitpull='git pull origin HEAD'
 alias gitgraph='git log --graph --oneline --decorate --date=relative --all --color'
 function gitacp { git add -A; git commit -m "$1"; git push origin HEAD; }
-function gitcp { git commit -m "$1" ; git push origin master; }
+function gitcp { git commit -m "$1" ; git push origin HEAD; }
 function bashrc-update { cd $BASHRC_DIR; gitpull; . main; }
 
 # Mercurial aliases
