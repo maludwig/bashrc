@@ -117,6 +117,8 @@ alias hgpush='hg push'
 alias hgpull='hg pull -u'
 alias hgb='hg branch'
 alias hgheads='hg heads .'
+HGTEMPLATE="{rev}{ifeq(branch,'default','',' {branch}')}{if(bookmarks,' {bookmarks}')}{if(tags,' {tags}')} - {desc|firstline}"
+alias hggraph='hg log -l 30 --graph --template "$HGTEMPLATE"'
 function hgpbn {
     if [ "$#" == "1" ]; then
         hg push --branch "SPLICE-$1" --new-branch
