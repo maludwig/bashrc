@@ -78,4 +78,8 @@ if [ -d "$HOME/bin" ] ; then
     PATH="$HOME/bin:$PATH"
 fi
 
-cd ~
+if echo "$(pwd)" | grep -q wamp; then
+  echo "wamping"
+else
+  cd ~
+fi
