@@ -25,15 +25,28 @@ function msg-dry { echo -e "${CPINK}${@}${CDEFAULT}"; }
 
 function each-line { for var in "$@"; do echo "$var"; done; }
 
+# OSX does not have realpath
+if ! [ which realpath ]; then
+  function realpath {
+    python -c "import os; print(os.path.realpath('$1'))"
+  }
+fi
+
 alias mark='MARK="$(realpath .)"'
 alias back='cd "$MARK"'
 alias flick='FLICK="$(realpath .)";cd "$MARK";MARK="$FLICK"'
 alias flickto='MARK="$(realpath .)";cd'
 
 # Bash aliases
-alias ll='ls -lah --color'
-alias ll-sort-size='ll -S'
 alias l='ls --color'
+# OSX uses CLICOLOR to show color instead of --color
+l &> /dev/null
+if [ "$?" == "1" ]; then
+  alias l='ls'
+  export CLICOLOR=1
+fi
+alias ll='l -lah'
+alias ll-sort-size='ll -S'
 alias w='cd /var/www/html'
 alias wr='cd ~/Work/realtalk'
 alias f='grep -R'
