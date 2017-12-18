@@ -49,7 +49,10 @@ alias ll='l -lah'
 alias ll-sort-size='ll -S'
 alias w='cd /var/www/html'
 alias wr='cd ~/Work/realtalk'
-alias f='grep -R'
+function f {
+  echo running f
+  grep "$1" -R .
+}
 
 alias vsci='sudo vim /splice/software/javaOutgoing/SplashCall.ini'
 
