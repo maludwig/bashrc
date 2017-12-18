@@ -7,15 +7,15 @@
 #35 = pink
 #36 = cyan
 #37 = white
-export CBLACK="\e[0;30m"
-export CRED="\e[0;31m"
-export CGREEN="\e[0;32m"
-export CYELLOW="\e[0;33m"
-export CBLUE="\e[0;34m"
-export CPINK="\e[0;35m"
-export CCYAN="\e[0;36m"
-export CWHITE="\e[0;37m"
-export CDEFAULT="\e[0m"
+export CBLACK="\033[0;30m"
+export CRED="\033[0;31m"
+export CGREEN="\033[0;32m"
+export CYELLOW="\033[0;33m"
+export CBLUE="\033[0;34m"
+export CPINK="\033[0;35m"
+export CCYAN="\033[0;36m"
+export CWHITE="\033[0;37m"
+export CDEFAULT="\033[0m"
 
 if [ "$USER" = "root" ]; then
 	CUSER="${CRED}"

@@ -25,18 +25,33 @@ function msg-dry { echo -e "${CPINK}${@}${CDEFAULT}"; }
 
 function each-line { for var in "$@"; do echo "$var"; done; }
 
+# OSX does not have realpath
+if ! which realpath &> /dev/null; then
+  function realpath {
+    python -c "import os; print(os.path.realpath('$1'))"
+  }
+fi
+
 alias mark='MARK="$(realpath .)"'
 alias back='cd "$MARK"'
 alias flick='FLICK="$(realpath .)";cd "$MARK";MARK="$FLICK"'
 alias flickto='MARK="$(realpath .)";cd'
 
 # Bash aliases
-alias ll='ls -lah --color'
-alias ll-sort-size='ll -S'
 alias l='ls --color'
+# OSX uses CLICOLOR to show color instead of --color
+l &> /dev/null
+if [ "$?" == "1" ]; then
+  alias l='ls'
+  export CLICOLOR=1
+fi
+alias ll='l -lah'
+alias ll-sort-size='ll -S'
 alias w='cd /var/www/html'
 alias wr='cd ~/Work/realtalk'
-alias f='grep -R'
+function f {
+  grep "$1" -R .
+}
 
 alias vsci='sudo vim /splice/software/javaOutgoing/SplashCall.ini'
 
@@ -97,11 +112,11 @@ alias gitan='git add -An'
 alias gitc='git commit -m'
 alias gitch='git checkout'
 alias gitchb='git checkout -b'
-alias gitpush='git push origin master'
-alias gitpull='git pull origin master'
+alias gitpush='git push origin HEAD'
+alias gitpull='git pull origin HEAD'
 alias gitgraph='git log --graph --oneline --decorate --date=relative --all --color'
 function gitacp { git add -A; git commit -m "$1"; git push origin HEAD; }
-function gitcp { git commit -m "$1" ; git push origin master; }
+function gitcp { git commit -m "$1" ; git push origin HEAD; }
 function bashrc-update { cd $BASHRC_DIR; gitpull; . main; }
 
 # Mercurial aliases
@@ -117,6 +132,8 @@ alias hgpush='hg push'
 alias hgpull='hg pull -u'
 alias hgb='hg branch'
 alias hgheads='hg heads .'
+HGTEMPLATE="{rev}{ifeq(branch,'default','',' {branch}')}{if(bookmarks,' {bookmarks}')}{if(tags,' {tags}')} - {desc|firstline}"
+alias hggraph='hg log -l 30 --graph --template "$HGTEMPLATE"'
 function hgpbn {
     if [ "$#" == "1" ]; then
         hg push --branch "SPLICE-$1" --new-branch
