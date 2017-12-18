@@ -50,7 +50,6 @@ alias ll-sort-size='ll -S'
 alias w='cd /var/www/html'
 alias wr='cd ~/Work/realtalk'
 function f {
-  echo running f
   grep "$1" -R .
 }
 
