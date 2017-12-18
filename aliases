@@ -323,3 +323,92 @@ function set-host-alias { ask-default "Enter a host alias for this machine" "$HO
 # Login aliases
 alias suw='sudo su apache'
 
+
+RDS_HOST='psql02az.splicesoftware.com'
+RDS_USER='splice'
+RDS_PASS='425-78-Ave-SW'
+
+function timed_query {
+  WHOLE_QUERY=`cat`
+  log-8601 "--- Running query ---"
+  log-8601 "$WHOLE_QUERY"
+  START_TIME=`date +%s`
+  echo "$WHOLE_QUERY" | mysql -h${RDS_HOST} -u${RDS_USER} -p${RDS_PASS}
+  # sleep 64
+  END_TIME=`date +%s`
+  ELAPSED=$[END_TIME-START_TIME]
+  MINS=$[ELAPSED/60]
+  SECS=$[ELAPSED-$[MINS*60]]
+  if [ "$ELAPSED" == 0 ]; then
+    msg-error "Query ran suspiciously quickly."
+  fi
+  log-8601 "--- Done, ran for ${MINS}m${SECS}s ---"
+}
+
+function get-user-home-dir {
+  THEUSER="$1"
+  getent passwd "$THEUSER" | cut -d: -f6
+}
+
+function allow-bash-login {
+  ask-default "Which user should I allow bash access for?" "$1"
+  THEUSER="$ASK"
+  echo usermod -s /bin/bash "$THEUSER"
+  THEHOMEDIR=`get-user-home-dir`
+  ask-yes "Recursively change permissions for $THEUSER home directory, $THEHOMEDIR ?"
+}
+
+function query_count {
+  DB_AND_TABLE="$1"
+  mysql -h${RDS_HOST} -u${RDS_USER} -p${RDS_PASS} -N -B -e "SELECT COUNT(*) FROM ${DB_AND_TABLE};"
+}
+
+function time_each_query_in_file {
+  FILEPATH="$1"
+  ORIGINAL_IFS="$IFS"
+  IFS=';'
+  for QUERY in `cat "$FILEPATH"`; do
+    echo "$QUERY;" | timed_query
+  done
+  IFS="$ORIGINAL_IFS"
+}
+
+function setup-sync {
+  if [ -f ~/.sync_options ]; then
+    source ~/.sync_options
+  else
+    SYNCSVR='localhost'
+    SYNCLOCALPARENT=`realpath .`
+    SYNCREMOTEPARENT=`realpath .`
+    SYNCSWITCHES="-iav --exclude '*.pyc' --checksum --ignore-times --no-times --no-owner --no-group --no-perms"
+  fi
+  ask-default "Which remote host do you want to sync to?" "$SYNCSVR"
+  export SYNCSVR="$ASK"
+  ask-default "What is the parent directory on your local?" "$SYNCLOCALPARENT"
+  export SYNCLOCALPARENT="$ASK"
+  ask-default "What is the parent directory on the remote server?" "$SYNCREMOTEPARENT"
+  export SYNCREMOTEPARENT="$ASK"
+  ask-default "What switches should I use?" "$SYNCSWITCHES"
+  export SYNCSWITCHES="$ASK"
+  echo "
+  export SYNCSVR='$SYNCSVR'
+  export SYNCLOCALPARENT='$SYNCLOCALPARENT'
+  export SYNCREMOTEPARENT='$SYNCREMOTEPARENT'
+  export SYNCSWITCHES='$SYNCSWITCHES'
+  " > ~/.sync_options
+}
+
+function syncup {
+  DIRNAME="$1"
+  echo "Syncing:"
+  echo " Remote: $SYNCREMOTEPARENT/$DIRNAME/"
+  echo " Local:  $SYNCLOCALPARENT/$DIRNAME/"
+  rsync-sudo $SYNCSWITCHES "$SYNCLOCALPARENT/$DIRNAME/" "$SYNCSVR:$SYNCREMOTEPARENT/$DIRNAME/"
+}
+
+#function syncup {
+#  DIRNAME="$1"
+#  echo "Syncing $DIRNAME to $SYNCSVR"
+#  echo rsync-sudo -iav --exclude '*.pyc' --checksum --ignore-times --no-times --no-owner --no-group --no-perms "/home/mitchell/Work/realtalk/realtalk360/$DIRNAME/" "$SYNCSVR:/splice/local/lib/realtalk360/$DIRNAME/"
+#}
+
