@@ -429,3 +429,59 @@ function syncup {
 #  echo rsync-sudo -iav --exclude '*.pyc' --checksum --ignore-times --no-times --no-owner --no-group --no-perms "/home/mitchell/Work/realtalk/realtalk360/$DIRNAME/" "$SYNCSVR:/splice/local/lib/realtalk360/$DIRNAME/"
 #}
 
+
+function leeroy {
+  echo -ne "$CCYAN"
+  echo -ne "LE"
+  sleep 0.1
+  echo -ne "E"
+  sleep 0.1
+  echo -ne "E"
+  sleep 0.1
+  echo -ne "E"
+  sleep 0.1
+  echo -ne "$CGREEN"
+  echo -ne "E"
+  sleep 0.1
+  echo -ne "E"
+  sleep 0.1
+  echo -ne "E"
+  sleep 0.1
+  echo -ne "$CYELLOW"
+  echo -ne "E"
+  sleep 0.1
+  echo -ne "E"
+  sleep 0.1
+  echo -ne "E"
+  sleep 0.1
+  echo -ne "$CRED"
+  echo -ne "E"
+  sleep 0.1
+  echo -ne "E"
+  sleep 0.1
+  echo -ne "E"
+  sleep 0.1
+  echo -ne "R"
+  sleep 0.1
+  echo -ne "O"
+  sleep 0.1
+  echo -ne 'Y!'
+  sleep 1
+
+  echo -ne "$CPINK"
+  sleep 0.1
+  echo -ne ' JE'
+  sleep 0.1
+  echo -ne 'E'
+  sleep 0.1
+  echo -ne 'E'
+  sleep 0.1
+  echo -ne 'NK'
+  sleep 0.1
+  echo -ne 'I'
+  sleep 0.5
+  echo -ne 'N'
+  sleep 0.2
+  echo -ne 'S!!!'
+}
+
