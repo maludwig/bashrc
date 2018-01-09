@@ -6,10 +6,7 @@ if [ -f /etc/bashrc ]; then
 elif [ -f /etc/bash.bashrc ]; then
   echo "source /etc/bashrc.extensions/main" >> /etc/bash.bashrc
 fi
-if [ -f /root/.bash_profile ]; then
-  echo "source /etc/bashrc.extensions/main" >> /root/.bashrc
-fi
-if [ -f /root/.bashrc ]; then
-  echo "source /etc/bashrc.extensions/main" >> /root/.bashrc
-fi
+echo "source /etc/bashrc.extensions/main" >> /private/var/root/.bashrc
+echo "source /etc/bashrc.extensions/main" >> /private/var/root/.bashrc
 chsh -s /bin/bash
+
