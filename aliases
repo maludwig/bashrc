@@ -161,6 +161,15 @@ function hgcpb {
 
 
 # Package Manager aliases
+alias getpip='wget https://bootstrap.pypa.io/get-pip.py; sudo python get-pip.py'
+alias getbrew='/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
+alias rmbrew='ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/uninstall)"'
+
+alias bri='brew install'
+alias bru='brew update'
+alias brlg='brew search'
+alias brli='brew list --versions'
+
 alias ag='sudo apt-get -y install'
 alias ags='sudo apt-get -s install'
 alias agu='sudo apt-get upgrade'
