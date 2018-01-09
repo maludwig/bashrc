@@ -1,0 +1,15 @@
+#!/bin/bash
+mkdir /etc/bashrc.extensions
+cp -r ./ /etc/bashrc.extensions/
+if [ -f /etc/bashrc ]; then
+  echo "source /etc/bashrc.extensions/main" >> /etc/bashrc
+elif [ -f /etc/bash.bashrc ]; then
+  echo "source /etc/bashrc.extensions/main" >> /etc/bash.bashrc
+fi
+if [ -f /root/.bash_profile ]; then
+  echo "source /etc/bashrc.extensions/main" >> /root/.bashrc
+fi
+if [ -f /root/.bashrc ]; then
+  echo "source /etc/bashrc.extensions/main" >> /root/.bashrc
+fi
+chsh -s /bin/bash
