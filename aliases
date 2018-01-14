@@ -10,7 +10,9 @@ function date-second { echo $(date +%F_%H-%M-%S); }
 function date-8601 { date -u +%Y-%m-%dT%H:%M:%S%z; }
 function date-8601-local { date +%Y-%m-%dT%H:%M:%S%z; }
 function log-8601 { echo "[ $(date-8601) ] $@"; }
+function log-8601-local { echo "[ $(date-8601-local) ] $@"; }
 function log-err-8601 { echo-err "[ $(date-8601) ] $@"; }
+function log-err-8601-local { echo-err "[ $(date-8601-local) ] $@"; }
 
 function ask { echo -ne "${CYELLOW} $1: ${CDEFAULT}"; read ASK; export ASK; }
 function ask-default { echo -ne "${CYELLOW} $1 [$2]: ${CDEFAULT}"; read ASK; export ASK=${ASK:-$2}; }
