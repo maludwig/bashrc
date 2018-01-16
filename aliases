@@ -52,6 +52,7 @@ alias wr='cd ~/Work/realtalk'
 function f {
   grep "$1" -R .
 }
+alias hig='history | grep'
 
 alias vsci='sudo vim /splice/software/javaOutgoing/SplashCall.ini'
 
@@ -169,19 +170,30 @@ alias bri='brew install'
 alias bru='brew update'
 alias brlg='brew search'
 alias brli='brew list --versions'
+alias brlig='brew list --versions | grep'
 
-alias ag='sudo apt-get -y install'
+alias brci='brew cask install'
+alias brcu='brew cask update'
+alias brclg='brew cask search'
+alias brcli='brew cask list --versions'
+alias brclig='brew cask list --versions | grep'
+
+alias agi='sudo apt-get -y install'
 alias ags='sudo apt-get -s install'
 alias agu='sudo apt-get upgrade'
-alias agli='apt --installed list'
 alias aglg='apt list | grep'
+alias agli='apt --installed list'
+alias aglig='apt --installed list | grep'
 alias yumi='sudo yum -y install'
 alias yumlg='yum list | grep'
-alias yumli='yum list installed | grep'
+alias yumli='yum list installed'
+alias yumlig='yum list installed | grep'
 alias yumu='sudo yum -y update'
 alias pipi='pip install'
 alias pipu='pip install --upgrade'
 alias piplg='pip search'
+alias pipli='pip freeze'
+alias piplig='pip freeze | grep'
 
 # Service aliases
 function sr { service "$1" restart; }
