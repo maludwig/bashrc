@@ -81,11 +81,19 @@ fi
 # You can extend your bashrc with an entry in your local ~/profile.d
 if [ -d "$HOME/profile.d" ] ; then
     # Apply additional profile scripts if they exist
-    for i in $HOME/profile.d/*.sh; do
+    for sourcefile in $HOME/profile.d/*.sh; do
         # If the file is readable
-        if [ -r "$i" ]; then
-            # echo "Sourcing $i"
-            . "$i"
+        if [ -r "$sourcefile" ]; then
+            UNIX_START_TIME=`gdate +%s.%N`
+            . "$sourcefile"
+            UNIX_END_TIME=`gdate +%s.%N`
+            SLOW_TO_SOURCE=`echo $UNIX_END_TIME $UNIX_START_TIME | awk '{print ((($1-$2)) > 0.2)}'`
+            TOTAL_TIME_IN_MS=`echo $UNIX_END_TIME $UNIX_START_TIME | awk '{ printf("%0.2f",$1-$2) }'`
+            if [ -z "$SUPPRESS_SLOW_SOURCE_WARNING" ]; then
+                if [ "$SLOW_TO_SOURCE" == "1" ]; then
+                    msg-error "It took ${TOTAL_TIME_IN_MS}s to load $sourcefile"
+                fi
+            fi
         fi
     done
 

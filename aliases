@@ -27,9 +27,9 @@ function msg-dry { echo -e "${CPINK}${@}${CDEFAULT}"; }
 
 function each-line { for var in "$@"; do echo "$var"; done; }
 
-function trim-leading {echo "$1" | sed -e 's/^[[:space:]]*//';}
-function trim-trailing {echo "$1" | sed -e 's/[[:space:]]*$//';}
-function trim {trim-leading `trim-trailing "$1"`;}
+function trim-leading { echo "$1" | sed -e 's/^[[:space:]]*//'; }
+function trim-trailing { echo "$1" | sed -e 's/[[:space:]]*$//'; }
+function trim { trim-leading `trim-trailing "$1"`; }
 
 # OSX does not have realpath
 if ! which realpath &> /dev/null; then
