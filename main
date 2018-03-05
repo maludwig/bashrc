@@ -78,8 +78,17 @@ if [ -d "$HOME/bin" ] ; then
     PATH="$HOME/bin:$PATH"
 fi
 
-if echo "$(pwd)" | grep -q wamp; then
-  echo "wamping"
-else
-  cd ~
+# You can extend your bashrc with an entry in your local ~/profile.d
+if [ -d "$HOME/profile.d" ] ; then
+    # Apply additional profile scripts if they exist
+    for i in $HOME/profile.d/*.sh; do
+        # If the file is readable
+        if [ -r "$i" ]; then
+            # echo "Sourcing $i"
+            . "$i"
+        fi
+    done
+
 fi
+
+

@@ -73,8 +73,8 @@ alias cdlh='cd /var/log/httpd'
 function md { mkdir $1; cd $1; }
 alias ..='cd ..'
 alias cd..='cd ..'
-function susu { sudo su "${@}"; if [ $? == 1 ]; then exit 1; fi; }
-alias die='exit 1'
+function susu { sudo su "${@}"; if [ $? == 123 ]; then exit 1; fi; }
+alias die='exit 123'
 
 # Log aliases
 alias tail-httpd="tail -n20 /var/log/httpd/error_log"
@@ -87,19 +87,19 @@ alias mqd-rds="mysqldump -uroot -p'$RDSPASS' -h'$RDSHOST'"
 
 # Django aliases
 function dm-path {
-cwd="$(pwd)"
-while [ ! -f manage.py ]; do
-if [ "$(pwd)" == "/" ]; then
-echo Hit the root.
-break;
-fi
-cd ..
-done
-if [ -f manage.py ]; then
-echo $(pwd)/manage.py
-else
-cd "$cwd"
-fi
+  cwd="$(pwd)"
+  while [ ! -f manage.py ]; do
+    if [ "$(pwd)" == "/" ]; then
+      echo Hit the root.
+      break;
+    fi
+    cd ..
+  done
+  if [ -f manage.py ]; then
+    echo $(pwd)/manage.py
+  else
+    cd "$cwd"
+  fi
 }
 alias dm='python $(dm-path)'
 alias dm-runserver='dm runserver 0.0.0.0:80'
@@ -251,11 +251,11 @@ alias edit-bashrc='cd $BASHRC_DIR; vim'
 
 #Warning: resets permissions
 function prepend { 
-if [ -f "$2" ]; then
-echo "$1" | cat - "$2" > /tmp/prepend && mv /tmp/prepend "$2"; 
-else
-echo "$1" > "$2"
-fi
+  if [ -f "$2" ]; then
+    echo "$1" | cat - "$2" > /tmp/prepend && mv /tmp/prepend "$2"; 
+  else
+    echo "$1" > "$2"
+  fi
 }
 
 function setup-ssh-login { 
@@ -363,11 +363,6 @@ function set-host-alias { ask-default "Enter a host alias for this machine" "$HO
 # Login aliases
 alias suw='sudo su apache'
 
-
-RDS_HOST='psql02az.splicesoftware.com'
-RDS_USER='splice'
-RDS_PASS='425-78-Ave-SW'
-
 function timed_query {
   WHOLE_QUERY=`cat`
   log-8601 "--- Running query ---"
@@ -445,13 +440,6 @@ function syncup {
   echo " Local:  $SYNCLOCALPARENT/$DIRNAME/"
   rsync-sudo $SYNCSWITCHES "$SYNCLOCALPARENT/$DIRNAME/" "$SYNCSVR:$SYNCREMOTEPARENT/$DIRNAME/"
 }
-
-#function syncup {
-#  DIRNAME="$1"
-#  echo "Syncing $DIRNAME to $SYNCSVR"
-#  echo rsync-sudo -iav --exclude '*.pyc' --checksum --ignore-times --no-times --no-owner --no-group --no-perms "/home/mitchell/Work/realtalk/realtalk360/$DIRNAME/" "$SYNCSVR:/splice/local/lib/realtalk360/$DIRNAME/"
-#}
-
 
 function leeroy {
   echo -ne "$CCYAN"
