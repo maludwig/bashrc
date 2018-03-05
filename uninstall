@@ -1,0 +1,19 @@
+#!/bin/bash
+
+function clean_source_line {
+  if [ -f "$1" ]; then
+    sed -i '/bashrc.extensions/d' "$1"
+  fi
+}
+clean_source_line /etc/bashrc
+clean_source_line /etc/bash.bashrc
+clean_source_line /root/.bashrc
+clean_source_line /private/var/root/.bashrc
+
+if [ -d /etc/bashrc.extensions ]; then
+  rm -rf /etc/bashrc.extensions
+fi
+if [ -f /etc/profile.d/bashrc.extensions.sh ]; then
+  rm -f /etc/profile.d/bashrc.extensions.sh
+fi
+

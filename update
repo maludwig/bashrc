@@ -1,3 +1,0 @@
-#!/bin/bash
-cp -r * /etc/bashrc.extensions/
-

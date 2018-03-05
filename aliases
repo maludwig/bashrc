@@ -10,7 +10,9 @@ function date-second { echo $(date +%F_%H-%M-%S); }
 function date-8601 { date -u +%Y-%m-%dT%H:%M:%S%z; }
 function date-8601-local { date +%Y-%m-%dT%H:%M:%S%z; }
 function log-8601 { echo "[ $(date-8601) ] $@"; }
+function log-8601-local { echo "[ $(date-8601-local) ] $@"; }
 function log-err-8601 { echo-err "[ $(date-8601) ] $@"; }
+function log-err-8601-local { echo-err "[ $(date-8601-local) ] $@"; }
 
 function ask { echo -ne "${CYELLOW} $1: ${CDEFAULT}"; read ASK; export ASK; }
 function ask-default { echo -ne "${CYELLOW} $1 [$2]: ${CDEFAULT}"; read ASK; export ASK=${ASK:-$2}; }
@@ -56,6 +58,7 @@ alias wr='cd ~/Work/realtalk'
 function f {
   grep "$1" -R .
 }
+alias hig='history | grep'
 
 alias vsci='sudo vim /splice/software/javaOutgoing/SplashCall.ini'
 
@@ -74,8 +77,8 @@ alias cdlh='cd /var/log/httpd'
 function md { mkdir $1; cd $1; }
 alias ..='cd ..'
 alias cd..='cd ..'
-function susu { sudo su "${@}"; if [ $? == 1 ]; then exit 1; fi; }
-alias die='exit 1'
+function susu { sudo su "${@}"; if [ $? == 123 ]; then exit 1; fi; }
+alias die='exit 123'
 
 # Log aliases
 alias tail-httpd="tail -n20 /var/log/httpd/error_log"
@@ -88,19 +91,19 @@ alias mqd-rds="mysqldump -uroot -p'$RDSPASS' -h'$RDSHOST'"
 
 # Django aliases
 function dm-path {
-cwd="$(pwd)"
-while [ ! -f manage.py ]; do
-if [ "$(pwd)" == "/" ]; then
-echo Hit the root.
-break;
-fi
-cd ..
-done
-if [ -f manage.py ]; then
-echo $(pwd)/manage.py
-else
-cd "$cwd"
-fi
+  cwd="$(pwd)"
+  while [ ! -f manage.py ]; do
+    if [ "$(pwd)" == "/" ]; then
+      echo Hit the root.
+      break;
+    fi
+    cd ..
+  done
+  if [ -f manage.py ]; then
+    echo $(pwd)/manage.py
+  else
+    cd "$cwd"
+  fi
 }
 alias dm='python $(dm-path)'
 alias dm-runserver='dm runserver 0.0.0.0:80'
@@ -165,18 +168,53 @@ function hgcpb {
 
 
 # Package Manager aliases
-alias ag='sudo apt-get -y install'
+alias getpip='wget https://bootstrap.pypa.io/get-pip.py; sudo python get-pip.py'
+alias getbrew='/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
+alias rmbrew='ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/uninstall)"'
+
+alias bri='brew install'
+alias bru='brew update'
+alias brlg='brew search'
+alias brli='brew list --versions'
+alias brlig='brew list --versions | grep'
+
+alias brci='brew cask install'
+alias brcu='brew cask update'
+alias brclg='brew cask search'
+alias brcli='brew cask list --versions'
+alias brclig='brew cask list --versions | grep'
+
+alias agi='sudo apt-get -y install'
 alias ags='sudo apt-get -s install'
 alias agu='sudo apt-get upgrade'
-alias agli='apt --installed list'
 alias aglg='apt list | grep'
+alias agli='apt --installed list'
+alias aglig='apt --installed list | grep'
 alias yumi='sudo yum -y install'
 alias yumlg='yum list | grep'
-alias yumli='yum list installed | grep'
+alias yumli='yum list installed'
+alias yumlig='yum list installed | grep'
 alias yumu='sudo yum -y update'
 alias pipi='pip install'
 alias pipu='pip install --upgrade'
 alias piplg='pip search'
+alias pipli='pip freeze'
+alias piplig='pip freeze | grep'
+
+function yuminode {
+  NODEVERSION="$1"
+  if [ "$NODEVERSION" == "" ]; then
+    NODEVERSION=9
+  fi
+  if [ -f "$(which node)" ]; then
+    echo "Node is already installed"
+  else
+    curl --silent --location https://rpm.nodesource.com/setup_${NODEVERSION}.x | sudo bash -
+    yum install -y nodejs
+  fi
+}
+alias yumidev='yum install -y sudo vim git nano epel-release; yum groupinstall "Development Tools";'
+
 
 # Service aliases
 function sr { service "$1" restart; }
@@ -232,11 +270,11 @@ alias edit-bashrc='cd $BASHRC_DIR; vim'
 
 #Warning: resets permissions
 function prepend { 
-if [ -f "$2" ]; then
-echo "$1" | cat - "$2" > /tmp/prepend && mv /tmp/prepend "$2"; 
-else
-echo "$1" > "$2"
-fi
+  if [ -f "$2" ]; then
+    echo "$1" | cat - "$2" > /tmp/prepend && mv /tmp/prepend "$2"; 
+  else
+    echo "$1" > "$2"
+  fi
 }
 
 function setup-ssh-login { 
@@ -344,11 +382,6 @@ function set-host-alias { ask-default "Enter a host alias for this machine" "$HO
 # Login aliases
 alias suw='sudo su apache'
 
-
-RDS_HOST='psql02az.splicesoftware.com'
-RDS_USER='splice'
-RDS_PASS='425-78-Ave-SW'
-
 function timed_query {
   WHOLE_QUERY=`cat`
   log-8601 "--- Running query ---"
@@ -427,13 +460,6 @@ function syncup {
   rsync-sudo $SYNCSWITCHES "$SYNCLOCALPARENT/$DIRNAME/" "$SYNCSVR:$SYNCREMOTEPARENT/$DIRNAME/"
 }
 
-#function syncup {
-#  DIRNAME="$1"
-#  echo "Syncing $DIRNAME to $SYNCSVR"
-#  echo rsync-sudo -iav --exclude '*.pyc' --checksum --ignore-times --no-times --no-owner --no-group --no-perms "/home/mitchell/Work/realtalk/realtalk360/$DIRNAME/" "$SYNCSVR:/splice/local/lib/realtalk360/$DIRNAME/"
-#}
-
-
 function leeroy {
   echo -ne "$CCYAN"
   echo -ne "LE"
@@ -488,4 +514,5 @@ function leeroy {
   sleep 0.2
   echo -ne 'S!!!'
 }
+
 
