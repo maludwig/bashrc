@@ -56,6 +56,27 @@ function f {
 }
 alias hig='history | grep'
 
+function bak {
+  FILE_TO_BACKUP=`realpath "$1"`
+  DIR_OF_FILE=`dirname "$FILE_TO_BACKUP"`
+  TIMESTAMP=`date-second`
+  BACKUP_DIR="/tmp/$TIMESTAMP$DIR_OF_FILE"
+  mkdir -p "$BACKUP_DIR" 
+  echo "Backing up '$FILE_TO_BACKUP' to '$BACKUP_DIR'"
+  if [ -f "$FILE_TO_BACKUP" ]; then
+    cp "$FILE_TO_BACKUP" "$BACKUP_DIR/"
+  elif [ -d "$FILE_TO_BACKUP" ]; then
+    cp -r "$FILE_TO_BACKUP" "$BACKUP_DIR/"
+  fi
+}
+
+function all2unix {
+  FILEPATH="$1"
+  OUTFILEPATH=".$1.$RANDOM"
+  cat "$FILEPATH" | sed -E $'s/\r$//' | tr '\r' '\n' > "$OUTFILEPATH"
+  mv -f "$OUTFILEPATH" "FILEPATH"
+}
+
 alias vsci='sudo vim /splice/software/javaOutgoing/SplashCall.ini'
 
 alias cda='cd /etc/asterisk'
@@ -118,6 +139,7 @@ alias gitchb='git checkout -b'
 alias gitpush='git push origin HEAD'
 alias gitpull='git pull origin HEAD'
 alias gitgraph='git log --graph --oneline --decorate --date=relative --all --color'
+function gitac { git add -A; git commit -m "$1"; }
 function gitacp { git add -A; git commit -m "$1"; git push origin HEAD; }
 function gitcp { git commit -m "$1" ; git push origin HEAD; }
 function bashrc-update { cd $BASHRC_DIR; gitpull; . main; }
@@ -167,6 +189,15 @@ function hgcpb {
 alias getpip='wget https://bootstrap.pypa.io/get-pip.py; sudo python get-pip.py'
 alias getbrew='/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"'
 alias rmbrew='ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/uninstall)"'
+
+alias npmi='npm install'
+alias npmu='npm update'
+alias npmlg='npm search'
+alias npmli='npm ls'
+alias npmlig='npm ls | grep'
+
+alias yarni='yarn add'
+alias yarna='yarn add'
 
 alias bri='brew install'
 alias bru='brew update'
