@@ -84,9 +84,17 @@ if [ -d "$HOME/profile.d" ] ; then
     for sourcefile in $HOME/profile.d/*.sh; do
         # If the file is readable
         if [ -r "$sourcefile" ]; then
-            UNIX_START_TIME=`gdate +%s.%N`
+            if which gdate &> /dev/null; then
+              UNIX_START_TIME=`gdate +%s.%N`
+            else
+              UNIX_START_TIME=`date +%s.%N`
+            fi
             . "$sourcefile"
-            UNIX_END_TIME=`gdate +%s.%N`
+            if which gdate &> /dev/null; then
+              UNIX_END_TIME=`gdate +%s.%N`
+            else
+              UNIX_END_TIME=`date +%s.%N`
+            fi
             SLOW_TO_SOURCE=`echo $UNIX_END_TIME $UNIX_START_TIME | awk '{print ((($1-$2)) > 0.2)}'`
             TOTAL_TIME_IN_MS=`echo $UNIX_END_TIME $UNIX_START_TIME | awk '{ printf("%0.2f",$1-$2) }'`
             if [ -z "$SUPPRESS_SLOW_SOURCE_WARNING" ]; then
