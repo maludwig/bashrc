@@ -2,6 +2,7 @@
 # User specific aliases and functions
 
 # Script include
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 function echo-err { echo "$@" 1>&2; }
 
@@ -37,6 +38,8 @@ if ! which realpath &> /dev/null; then
     python -c "import os; print(os.path.realpath('$1'))"
   }
 fi
+
+function json_escape { printf '%s' "$1" | python -c 'import json,sys; print(json.dumps(sys.stdin.read()))'; }
 
 alias mark='MARK="$(realpath .)"'
 alias back='cd "$MARK"'
@@ -76,7 +79,7 @@ function bak {
 
 function all2unix {
   FILEPATH="$1"
-  OUTFILEPATH=".$1.$RANDOM"
+  OUTFILEPATH="$1.$RANDOM.tmp"
   cat "$FILEPATH" | sed -E $'s/\r$//' | tr '\r' '\n' > "$OUTFILEPATH"
   mv -f "$OUTFILEPATH" "FILEPATH"
 }
