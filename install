@@ -32,7 +32,7 @@ else
 fi
 
 if ! [ -d "$HOME/profile.d" ]; then
-  cp -r "$SCRIPTDIR/profile.d" "$HOME/"
+  rsync -av "$SCRIPTDIR/profile.d" "$HOME/profile.d"
 fi
 
 echo '
