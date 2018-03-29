@@ -20,6 +20,7 @@ function ask-default { echo -ne "${CYELLOW} $1 [$2]: ${CDEFAULT}"; read ASK; exp
 function ask-yes { echo -ne "${CYELLOW} $1 [Y/n]: ${CDEFAULT}"; read ASK; ASK="$(echo $ASK | tr '[:upper:]' '[:lower:]')"; export ASK=${ASK:-y}; }
 function ask-no { echo -ne "${CYELLOW} $1 [y/N]: ${CDEFAULT}"; read ASK; ASK="$(echo $ASK | tr '[:upper:]' '[:lower:]')"; export ASK=${ASK:-n}; }
 function ask-enter { echo -e "${CYELLOW} $1: [Press enter to continue]${CDEFAULT}" ; read; }
+function ask-password { echo -ne "${CYELLOW} $1: ${CDEFAULT}" ; read -s ASK; }
 
 function msg-error { echo -e "${CRED}${@}${CDEFAULT}"; }
 function msg-info { echo -e "${CCYAN}${@}${CDEFAULT}"; }
