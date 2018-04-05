@@ -137,6 +137,12 @@ alias dm-mig='dm makemigrations; dm migrate'
 
 
 # Git aliases
+
+function git-branch-name {
+  if git rev-parse &> /dev/null; then
+    echo -n `git rev-parse --abbrev-ref HEAD`:`git rev-parse --short HEAD`
+  fi
+}
 alias gits='git status'
 alias gita='git add -A'
 alias gitan='git add -An'

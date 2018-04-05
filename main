@@ -59,7 +59,7 @@ fi
 PS1="${CUSER}\u@${CYELLOW}${HOST_ALIAS}:${CGREEN}\w${CDEFAULT}\n$ "
 case $TERM in
         xterm*)
-                PROMPT_COMMAND='echo -ne "\033]0;${HOST_ALIAS}:${PWD/#$HOME/~}"; echo -ne "\007"; echo -ne "${CCYAN}[$(date-8601-local)]: ${CDEFAULT}";'
+                PROMPT_COMMAND='echo -ne "\033]0;${HOST_ALIAS}:${PWD/#$HOME/~}"; echo -ne "\007"; echo -ne "${CCYAN}[$(date-8601-local)] ${CYELLOW}$(git-branch-name) ${CDEFAULT}";'
                 ;;
         screen)
                 PROMPT_COMMAND='echo -ne "\033_${HOST_ALIAS}:${PWD/#$HOME/~}"; echo -ne "\033\\"; echo -ne "${CCYAN}[$(date-8601-local)]: ${CDEFAULT}";'
