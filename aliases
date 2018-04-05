@@ -20,6 +20,7 @@ function ask-default { echo -ne "${CYELLOW} $1 [$2]: ${CDEFAULT}"; read ASK; exp
 function ask-yes { echo -ne "${CYELLOW} $1 [Y/n]: ${CDEFAULT}"; read ASK; ASK="$(echo $ASK | tr '[:upper:]' '[:lower:]')"; export ASK=${ASK:-y}; }
 function ask-no { echo -ne "${CYELLOW} $1 [y/N]: ${CDEFAULT}"; read ASK; ASK="$(echo $ASK | tr '[:upper:]' '[:lower:]')"; export ASK=${ASK:-n}; }
 function ask-enter { echo -e "${CYELLOW} $1: [Press enter to continue]${CDEFAULT}" ; read; }
+function ask-password { echo -ne "${CYELLOW} $1: ${CDEFAULT}" ; read -s ASK; }
 
 function msg-error { echo -e "${CRED}${@}${CDEFAULT}"; }
 function msg-info { echo -e "${CCYAN}${@}${CDEFAULT}"; }
@@ -288,8 +289,14 @@ alias play='ansible-playbook'
 # Work directory
 alias work='cd $WORK_HOME'
 
-# Common functions 
-alias rsync-sudo='rsync -e "ssh" --progress --rsync-path="sudo rsync"'
+# Common functions
+function hush {
+  SVR="$1"
+  ssh "$SVR" -- 'touch ~/.hushlogin'
+} 
+
+# If you have a welcome banner and it is mucking with rsync, try: hush SERVERFQDN
+alias rsync-sudo='rsync -e "ssh -tt" --progress --rsync-path="sudo rsync"'
 alias rsync-limited='rsync --progress --bwlimit=1000'
 alias rsync-sudo-limited='rsync-sudo --bwlimit=1000'
 function rsync-ext {                           rsync -amv --progress --include="$1" --include='*/' --exclude='*' $2 $3; }
