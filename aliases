@@ -103,6 +103,18 @@ function md { mkdir $1; cd $1; }
 alias ..='cd ..'
 alias cd..='cd ..'
 function susu { sudo su "${@}"; if [ $? == 123 ]; then exit 1; fi; }
+function susub { 
+  OTHER_USER="${1-root}"
+  if [ "$OTHER_USER" == "root" ]; then
+    sudo bash --rcfile "$BASHRC_DIR/main"
+  else
+    rsync -a --delete "$BASHRC_DIR/" "/tmp/bashrc/"
+    sudo -u root sudo -u "$OTHER_USER" bash --rcfile /tmp/bashrc/main
+  fi
+  if [ $? == 123 ]; then 
+    exit 1; 
+  fi; 
+}
 alias die='exit 123'
 
 # Log aliases
