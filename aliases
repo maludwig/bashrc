@@ -41,6 +41,8 @@ if ! which realpath &> /dev/null; then
 fi
 
 function json_escape { printf '%s' "$1" | python -c 'import json,sys; print(json.dumps(sys.stdin.read()))'; }
+function file-age { FILE_CREATED_TIME=`date -r "$1" +%s`; TIME_NOW=`date +%s`; echo "$[ ${TIME_NOW} - ${FILE_CREATED_TIME} ]"; } 
+
 
 alias mark='MARK="$(realpath .)"'
 alias back='cd "$MARK"'
