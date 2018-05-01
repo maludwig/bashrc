@@ -20,7 +20,7 @@ if [ -f $BASHRC_DIR/aliases ]; then
         . $BASHRC_DIR/aliases
 fi
 # Default variables
-export HOST_ALIAS="${HOSTNAME%%.*}"
+export HOST_ALIAS=`hostname -f`
 if [ "$USER" == "" ]; then
         USER="${USERNAME}"
 fi
