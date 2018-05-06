@@ -1,110 +1,104 @@
 #!/bin/bash
 # Record this directory for later reference
-if echo $BASH_SOURCE | grep -E "^/" > /dev/null; then
-	BASHRC_DIR="${BASH_SOURCE/\/main/}"
-else
-	if [ "$BASH_SOURCE" == "main" ]; then
-		BASHRC_DIR=$(pwd)
-	else
-		BASHRC_DIR="$(pwd)/${BASH_SOURCE/\/main/}"
-	fi
-fi
-export BASHRC_DIR
 
-# Bash colors
-if [ -f $BASHRC_DIR/colors ]; then
-        . $BASHRC_DIR/colors
-fi
-# Bash aliases
-if [ -f $BASHRC_DIR/aliases ]; then
-        . $BASHRC_DIR/aliases
-fi
-# Default variables
-export HOST_ALIAS=`hostname -f`
-if [ "$USER" == "" ]; then
-        USER="${USERNAME}"
-fi
+if [ "$BASHRC_LOADED" != "yes" ]; then
+  export BASHRC_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-function assert-path {
-	if [ -d "$1" ]; then
-		if ! echo ":${PATH}:" | grep -q ":${1}:"; then PATH=$PATH:$1 ; fi
-	fi
-}
+  # Bash colors
+  if [ -f $BASHRC_DIR/colors ]; then
+    . $BASHRC_DIR/colors
+  fi
+  # Bash aliases
+  if [ -f $BASHRC_DIR/aliases ]; then
+    . $BASHRC_DIR/aliases
+  fi
+  # Default variables
+  export HOST_ALIAS=`hostname -f`
+  if [ "$USER" == "" ]; then
+    USER="${USERNAME}"
+  fi
 
-assert-path "${HOME}/bin"
-assert-path "/bin"
-assert-path "/usr/bin"
-assert-path "/usr/local/bin"
+  function assert-path {
+    if [ -d "$1" ]; then
+      if ! echo ":${PATH}:" | grep -q ":${1}:"; then PATH=$PATH:$1 ; fi
+    fi
+  }
 
-assert-path "/sbin"
-assert-path "/usr/sbin"
-assert-path "/usr/local/sbin"
-assert-path "/opt/python2.7/bin"
+  assert-path "${HOME}/bin"
+  assert-path "/bin"
+  assert-path "/usr/bin"
+  assert-path "/usr/local/bin"
 
-assert-path "$BASHRC_DIR/bin"
+  assert-path "/sbin"
+  assert-path "/usr/sbin"
+  assert-path "/usr/local/sbin"
+  assert-path "/opt/python2.7/bin"
 
-# EC2 Environment
-una=`uname -a`
-if echo "$una" | grep "amzn" > /dev/null; then
-	if [ -f $BASHRC_DIR/amzn ]; then
-		. $BASHRC_DIR/amzn
-	fi
-fi
+  assert-path "$BASHRC_DIR/bin"
 
-# Host specific variables
-if [ -f $BASHRC_DIR/hostvars ]; then
-        . $BASHRC_DIR/hostvars
-fi
+  # EC2 Environment
+  una=`uname -a`
+  if echo "$una" | grep "amzn" > /dev/null; then
+    if [ -f $BASHRC_DIR/amzn ]; then
+      . $BASHRC_DIR/amzn
+    fi
+  fi
 
-PS1="${CUSER}\u@${CYELLOW}${HOST_ALIAS}:${CGREEN}\w${CDEFAULT}\n$ "
-case $TERM in
-        xterm*)
-                PROMPT_COMMAND='echo -ne "\033]0;${HOST_ALIAS}:${PWD/#$HOME/~}"; echo -ne "\007"; echo -ne "${CCYAN}[$(date-8601-local)] ${CYELLOW}$(git-branch-name) ${CDEFAULT}";'
-                ;;
-        screen)
-                PROMPT_COMMAND='echo -ne "\033_${HOST_ALIAS}:${PWD/#$HOME/~}"; echo -ne "\033\\"; echo -ne "${CCYAN}[$(date-8601-local)]: ${CDEFAULT}";'
-                ;;
-        cygwin)
-                #PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOST_ALIAS}:${PWD/#$HOME/~}"; echo -ne "\007"'
-                PROMPT_COMMAND='echo -ne "\033]0;${PWD/#$HOME/~}"; echo -ne "\007"'
-                ;;
-esac
-# Bash history improvements
-if [ -f $BASHRC_DIR/history ]; then
-        . $BASHRC_DIR/history
-fi
-# set PATH so it includes user's private bin if it exists
-if [ -d "$HOME/bin" ] ; then
+  # Host specific variables
+  if [ -f $BASHRC_DIR/hostvars ]; then
+    . $BASHRC_DIR/hostvars
+  fi
+
+  PS1="${CUSER}\u@${CYELLOW}${HOST_ALIAS}:${CGREEN}\w${CDEFAULT}\n$ "
+  case $TERM in
+    xterm*)
+      PROMPT_COMMAND='echo -ne "\033]0;${HOST_ALIAS}:${PWD/#$HOME/~}"; echo -ne "\007"; echo -ne "${CCYAN}[$(date-8601-local)] ${CYELLOW}$(git-branch-name) ${CDEFAULT}";'
+      ;;
+    screen)
+      PROMPT_COMMAND='echo -ne "\033_${HOST_ALIAS}:${PWD/#$HOME/~}"; echo -ne "\033\\"; echo -ne "${CCYAN}[$(date-8601-local)]: ${CDEFAULT}";'
+      ;;
+    cygwin)
+      #PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOST_ALIAS}:${PWD/#$HOME/~}"; echo -ne "\007"'
+      PROMPT_COMMAND='echo -ne "\033]0;${PWD/#$HOME/~}"; echo -ne "\007"'
+      ;;
+  esac
+  
+  # Bash history improvements
+  if [ -f $BASHRC_DIR/history ]; then
+    . $BASHRC_DIR/history
+  fi
+  # set PATH so it includes user's private bin if it exists
+  if [ -d "$HOME/bin" ] ; then
     PATH="$HOME/bin:$PATH"
-fi
+  fi
 
-# You can extend your bashrc with an entry in your local ~/profile.d
-if [ -d "$HOME/profile.d" ] ; then
+  # You can extend your bashrc with an entry in your local ~/profile.d
+  if [ -d "$HOME/profile.d" ] ; then
     # Apply additional profile scripts if they exist
     for sourcefile in $HOME/profile.d/*.sh; do
-        # If the file is readable
-        if [ -r "$sourcefile" ]; then
-            if which gdate &> /dev/null; then
-              UNIX_START_TIME=`gdate +%s.%N`
-            else
-              UNIX_START_TIME=`date +%s.%N`
-            fi
-            . "$sourcefile"
-            if which gdate &> /dev/null; then
-              UNIX_END_TIME=`gdate +%s.%N`
-            else
-              UNIX_END_TIME=`date +%s.%N`
-            fi
-            SLOW_TO_SOURCE=`echo $UNIX_END_TIME $UNIX_START_TIME | awk '{print ((($1-$2)) > 0.2)}'`
-            TOTAL_TIME_IN_MS=`echo $UNIX_END_TIME $UNIX_START_TIME | awk '{ printf("%0.2f",$1-$2) }'`
-            if [ -z "$SUPPRESS_SLOW_SOURCE_WARNING" ]; then
-                if [ "$SLOW_TO_SOURCE" == "1" ]; then
-                    msg-error "It took ${TOTAL_TIME_IN_MS}s to load $sourcefile"
-                fi
-            fi
+      # If the file is readable
+      if [ -r "$sourcefile" ]; then
+        if which gdate &> /dev/null; then
+          UNIX_START_TIME=`gdate +%s.%N`
+        else
+          UNIX_START_TIME=`date +%s.%N`
         fi
+        . "$sourcefile"
+        if which gdate &> /dev/null; then
+          UNIX_END_TIME=`gdate +%s.%N`
+        else
+          UNIX_END_TIME=`date +%s.%N`
+        fi
+        SLOW_TO_SOURCE=`echo $UNIX_END_TIME $UNIX_START_TIME | awk '{print ((($1-$2)) > 0.2)}'`
+        TOTAL_TIME_IN_MS=`echo $UNIX_END_TIME $UNIX_START_TIME | awk '{ printf("%0.2f",$1-$2) }'`
+        if [ -z "$SUPPRESS_SLOW_SOURCE_WARNING" ]; then
+          if [ "$SLOW_TO_SOURCE" == "1" ]; then
+            msg-error "It took ${TOTAL_TIME_IN_MS}s to load $sourcefile"
+          fi
+        fi
+      fi
     done
-
+  fi
+  BASHRC_LOADED="yes"
 fi
-
 
