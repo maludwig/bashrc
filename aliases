@@ -155,9 +155,15 @@ alias dm-mig='dm makemigrations; dm migrate'
 
 function git-branch-name {
   if git rev-parse &> /dev/null; then
-    echo -n `git rev-parse --abbrev-ref HEAD`:`git rev-parse --short HEAD`
+    BRANCH_NAME=`git rev-parse --abbrev-ref HEAD 2>/dev/null`
+    BRANCH_HASH=`git rev-parse --short HEAD 2>/dev/null`
+    if [ -z "$BRANCH_HASH" ]; then
+      BRANCH_HASH="<new>"
+    fi
+    echo -n "$BRANCH_NAME:$BRANCH_HASH"
   fi
 }
+
 alias gits='git status'
 alias gita='git add -A'
 alias gitan='git add -An'
