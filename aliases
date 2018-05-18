@@ -40,6 +40,12 @@ if ! which realpath &> /dev/null; then
   }
 fi
 
+if ! command -v timeout &> /dev/null; then
+  if command -v gtimeout &> /dev/null; then
+    alias timeout=gtimeout
+  fi
+fi
+
 function json_escape { printf '%s' "$1" | python -c 'import json,sys; print(json.dumps(sys.stdin.read()))'; }
 function file-age { FILE_CREATED_TIME=`date -r "$1" +%s`; TIME_NOW=`date +%s`; echo "$[ ${TIME_NOW} - ${FILE_CREATED_TIME} ]"; } 
 
@@ -583,4 +589,25 @@ function leeroy {
   echo -ne 'S!!!'
 }
 
-
+function testport {
+  REMOTE_HOST="$1"
+  REMOTE_PORT="$2"
+  if command -v telnet &> /dev/null; then
+    if echo "" | timeout 2 telnet "$REMOTE_HOST" "$REMOTE_PORT" 2>/dev/null | grep -q Connected; then
+      msg-success "Connected to $REMOTE_HOST on port $REMOTE_PORT"
+      return 0
+    else
+      msg-error "Could not connect to $REMOTE_HOST on port $REMOTE_PORT"
+      return 1
+    fi
+  elif command -v nc &> /dev/null; then
+    CONNECTION_RESULT=`timeout 2 nc -w 2 -z "$REMOTE_HOST" "$REMOTE_PORT" 2>&1`
+    if echo "$CONNECTION_RESULT" | grep -q Connection; then
+      msg-success "Connected to $REMOTE_HOST on port $REMOTE_PORT"
+      return 0
+    else
+      msg-error "Could not connect to $REMOTE_HOST on port $REMOTE_PORT"
+      return 1
+    fi
+  fi
+}
