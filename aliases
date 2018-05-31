@@ -53,7 +53,7 @@ alias flickto='MARK="$(realpath .)";cd'
 alias l='ls --color'
 # OSX uses CLICOLOR to show color instead of --color
 l &> /dev/null
-if [ "$?" == "1" ]; then
+if [[ "$?" == "1" ]]; then
   alias l='ls'
   export CLICOLOR=1
 fi
@@ -104,16 +104,16 @@ alias cdlh='cd /var/log/httpd'
 function md { mkdir $1; cd $1; }
 alias ..='cd ..'
 alias cd..='cd ..'
-function susu { sudo su "${@}"; if [ $? == 123 ]; then exit 1; fi; }
+function susu { sudo su "${@}"; if [[ $? == 123 ]]; then exit 1; fi; }
 function susub { 
   OTHER_USER="${1-root}"
-  if [ "$OTHER_USER" == "root" ]; then
+  if [[ "$OTHER_USER" == "root" ]]; then
     sudo bash --rcfile "$BASHRC_DIR/main"
   else
     rsync -a --delete "$BASHRC_DIR/" "/tmp/bashrc/"
     sudo -u root sudo -u "$OTHER_USER" bash --rcfile /tmp/bashrc/main
   fi
-  if [ $? == 123 ]; then 
+  if [[ $? == 123 ]]; then 
     exit 1; 
   fi; 
 }
@@ -132,7 +132,7 @@ alias mqd-rds="mysqldump -uroot -p'$RDSPASS' -h'$RDSHOST'"
 function dm-path {
   cwd="$(pwd)"
   while [ ! -f manage.py ]; do
-    if [ "$(pwd)" == "/" ]; then
+    if [[ "$(pwd)" == "/" ]]; then
       echo Hit the root.
       break;
     fi
@@ -188,21 +188,21 @@ alias hgheads='hg heads .'
 HGTEMPLATE="{rev}{ifeq(branch,'default','',' {branch}')}{if(bookmarks,' {bookmarks}')}{if(tags,' {tags}')} - {desc|firstline}"
 alias hggraph='hg log -l 30 --graph --template "$HGTEMPLATE"'
 function hgpbn {
-    if [ "$#" == "1" ]; then
+    if [[ "$#" == "1" ]]; then
         hg push --branch "SPLICE-$1" --new-branch
     else
         hg push -r . --new-branch
     fi
 }
 function hgpb {
-    if [ "$#" == "1" ]; then
+    if [[ "$#" == "1" ]]; then
         hg push --branch "SPLICE-$1"
     else
         hg push -r .
     fi
 }
 function hgub {
-    if [ "$#" == "1" ]; then
+    if [[ "$#" == "1" ]]; then
         hg update -r "SPLICE-$1"
     fi
 }
@@ -258,7 +258,7 @@ alias piplig='pip freeze | grep'
 
 function yuminode {
   NODEVERSION="$1"
-  if [ "$NODEVERSION" == "" ]; then
+  if [[ "$NODEVERSION" == "" ]]; then
     NODEVERSION=9
   fi
   if [ -f "$(which node)" ]; then
@@ -362,11 +362,11 @@ function setup-ssh-creds {
 	cp $BASHRC_DIR/ssh/mlkey.pem.gpg ./
 	decrypt-file mlkey.pem.gpg
 	ask-yes "Set mlkey as id_rsa?"
-	if [ "$ASK" != "n" ]; then
+	if [[ "$ASK" != "n" ]]; then
 		cp mlkey.pem id_rsa
 	fi
 	ask-yes "Set gmail as github key?"
-	if [ "$ASK" != "n" ]; then
+	if [[ "$ASK" != "n" ]]; then
 		cp $BASHRC_DIR/ssh/gmail.pem.gpg ./
 		decrypt-file gmail.pem.gpg
 		if grep -L "github.com" config > /dev/null; then
@@ -419,20 +419,20 @@ function generate-ssh-key {
 	msg-info "Your public key is below, you can share this with anyone, but keep your private key safe";
 	cat "$FILENAME.pub";
 	ask-yes "Shall I add this new key ($FILENAME) to ~/.ssh/config for you?";
-	if [ "$ASK" != "n" ]; then
+	if [[ "$ASK" != "n" ]]; then
 		prepend "IdentityFile ~/.ssh/$FILENAME" ~/.ssh/config;
 		msg-success "Added identity to config"
 	fi
 	grep -q "ensure_running_agent" ~/.bashrc
-	if [ $? != 0 ]; then
+	if [[ $? != 0 ]]; then
 		ask-yes "It looks like you are not running the ssh-agent. Shall I add it to your bashrc?"
-		if [ "$ASK" != "n" ]; then
+		if [[ "$ASK" != "n" ]]; then
 			echo "ensure_running_agent" >> ~/.bashrc;
 			msg-success "Added agent to bashrc"
 		fi
 	fi
 	ask-yes "Shall I add this new key ($FILENAME) to ~/.bashrc for you?";
-	if [ "$ASK" != "n" ]; then
+	if [[ "$ASK" != "n" ]]; then
 		echo "ssh-add ~/.ssh/$FILENAME" >> ~/.bashrc;
 		msg-success "Added key to agent"
 	fi
@@ -454,7 +454,7 @@ function timed_query {
   ELAPSED=$[END_TIME-START_TIME]
   MINS=$[ELAPSED/60]
   SECS=$[ELAPSED-$[MINS*60]]
-  if [ "$ELAPSED" == 0 ]; then
+  if [[ "$ELAPSED" == 0 ]]; then
     msg-error "Query ran suspiciously quickly."
   fi
   log-8601 "--- Done, ran for ${MINS}m${SECS}s ---"

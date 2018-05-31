@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function dump-secrets {
-	if [ "$SECRET_PASSWORD" == "" ]; then
+	if [[ "$SECRET_PASSWORD" == "" ]]; then
 		ask "What is the secret password?"
 		SECRET_PASSWORD="$ASK"
 	fi
@@ -24,7 +24,7 @@ print(all_secrets[key])
 '
 
 function print-secret {
-	if [ "$SECRET_PASSWORD" == "" ]; then
+	if [[ "$SECRET_PASSWORD" == "" ]]; then
 		ask "What is the secret password?"
 		SECRET_PASSWORD="$ASK"
 	fi
@@ -51,7 +51,7 @@ print(json.dumps(all_secrets))
 '
 
 function set-secret {
-	if [ "$SECRET_PASSWORD" == "" ]; then
+	if [[ "$SECRET_PASSWORD" == "" ]]; then
 		ask "What is the secret password?"
 		SECRET_PASSWORD="$ASK"
 	fi
@@ -69,7 +69,7 @@ function ssh-sudo {
 	REMOTE_HOST="$1"
 	shift
 	SUDO_PASS=`print-secret "sudo-${REMOTE_HOST}"`
-	if [ "$?" == "0" ]; then
+	if [[ "$?" == "0" ]]; then
 		cat <<- EOF
 		ssh -tt "$REMOTE_HOST" -- "echo '${SUDO_PASS}' | sudo -S $@"
 		EOF

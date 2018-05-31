@@ -1,20 +1,20 @@
 #!/bin/bash
 # Record this directory for later reference
-
-if [ "$BASHRC_LOADED" != "yes" ]; then
+if [[ "$BASHRC_LOADED" != "yes" ]]; then
   export BASHRC_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
   # Bash colors
   if [ -f $BASHRC_DIR/colors ]; then
     . $BASHRC_DIR/colors
   fi
+
   # Bash aliases
   if [ -f $BASHRC_DIR/aliases ]; then
     . $BASHRC_DIR/aliases
   fi
   # Default variables
   export HOST_ALIAS=`hostname -f`
-  if [ "$USER" == "" ]; then
+  if [[ "$USER" == "" ]]; then
     USER="${USERNAME}"
   fi
 
@@ -49,7 +49,13 @@ if [ "$BASHRC_LOADED" != "yes" ]; then
     . $BASHRC_DIR/hostvars
   fi
 
-  PS1="${CUSER}\u@${CYELLOW}${HOST_ALIAS}:${CGREEN}\w${CDEFAULT}\n$ "
+  if [ -n "$BASH_VERSION" ]; then
+    PS1="${CUSER}\u@${CYELLOW}${HOST_ALIAS}:${CGREEN}\w${CDEFAULT}\n$ "
+  elif [ -n "$ZSH_VERSION" ]; then
+    precmd() { eval "$PROMPT_COMMAND"; }
+    PS1="${CUSER}%n@${CYELLOW}${HOST_ALIAS}:${CGREEN}%~${CDEFAULT}"$'\n$ '
+    # PS1="%{$fg[red]%}%n%{$reset_color%}@%{$fg[blue]%}%m %{$fg[yellow]%}%~ %{$reset_color%}%% "
+  fi
   case $TERM in
     xterm*)
       PROMPT_COMMAND='echo -ne "\033]0;${HOST_ALIAS}:${PWD/#$HOME/~}"; echo -ne "\007"; echo -ne "${CCYAN}[$(date-8601-local)] ${CYELLOW}$(git-branch-name) ${CDEFAULT}";'
@@ -62,7 +68,7 @@ if [ "$BASHRC_LOADED" != "yes" ]; then
       PROMPT_COMMAND='echo -ne "\033]0;${PWD/#$HOME/~}"; echo -ne "\007"'
       ;;
   esac
-  
+
   # Bash history improvements
   if [ -f $BASHRC_DIR/history ]; then
     . $BASHRC_DIR/history
@@ -92,7 +98,7 @@ if [ "$BASHRC_LOADED" != "yes" ]; then
         SLOW_TO_SOURCE=`echo $UNIX_END_TIME $UNIX_START_TIME | awk '{print ((($1-$2)) > 0.2)}'`
         TOTAL_TIME_IN_MS=`echo $UNIX_END_TIME $UNIX_START_TIME | awk '{ printf("%0.2f",$1-$2) }'`
         if [ -z "$SUPPRESS_SLOW_SOURCE_WARNING" ]; then
-          if [ "$SLOW_TO_SOURCE" == "1" ]; then
+          if [[ "$SLOW_TO_SOURCE" == "1" ]]; then
             msg-error "It took ${TOTAL_TIME_IN_MS}s to load $sourcefile"
           fi
         fi

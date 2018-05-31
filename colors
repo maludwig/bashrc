@@ -7,18 +7,33 @@
 #35 = pink
 #36 = cyan
 #37 = white
-export CBLACK="\033[0;30m"
-export CRED="\033[0;31m"
-export CGREEN="\033[0;32m"
-export CYELLOW="\033[0;33m"
-export CBLUE="\033[0;34m"
-export CPINK="\033[0;35m"
-export CCYAN="\033[0;36m"
-export CWHITE="\033[0;37m"
-export CDEFAULT="\033[0m"
 
-if [ "$USER" = "root" ]; then
+if [ -n "$BASH_VERSION" ]; then
+	export CBLACK="\033[0;30m"
+	export CRED="\033[0;31m"
+	export CGREEN="\033[0;32m"
+	export CYELLOW="\033[0;33m"
+	export CBLUE="\033[0;34m"
+	export CPINK="\033[0;35m"
+	export CCYAN="\033[0;36m"
+	export CWHITE="\033[0;37m"
+	export CDEFAULT="\033[0m"
+elif [ -n "$ZSH_VERSION" ]; then
+	autoload -U colors && colors
+	export CBLACK="$fg[black]"
+	export CRED="$fg[red]"
+	export CGREEN="$fg[green]"
+	export CYELLOW="$fg[yellow]"
+	export CBLUE="$fg[blue]"
+	export CPINK="$fg[magenta]"
+	export CCYAN="$fg[cyan]"
+	export CWHITE="$fg[white]"
+	export CDEFAULT="$reset_color"
+fi
+
+if [[ "$USER" = "root" ]]; then
 	CUSER="${CRED}"
 else
 	CUSER="${CGREEN}"
 fi
+
