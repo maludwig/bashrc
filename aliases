@@ -109,6 +109,11 @@ alias cdlh='cd /var/log/httpd'
 
 function md { mkdir $1; cd $1; }
 alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
+alias ......='cd ../../../../..'
+alias .......='cd ../../../../../..'
 alias cd..='cd ..'
 function susu { sudo su "${@}"; if [ $? == 123 ]; then exit 1; fi; }
 function susub { 
