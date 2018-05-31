@@ -17,8 +17,8 @@ function log-err-8601-local { echo-err "[ $(date-8601-local) ] $@"; }
 
 function ask { echo -ne "${CYELLOW} $1: ${CDEFAULT}"; read ASK; export ASK; }
 function ask-default { echo -ne "${CYELLOW} $1 [$2]: ${CDEFAULT}"; read ASK; export ASK=${ASK:-$2}; }
-function ask-yes { echo -ne "${CYELLOW} $1 [Y/n]: ${CDEFAULT}"; read ASK; ASK="$(echo $ASK | tr '[:upper:]' '[:lower:]')"; export ASK=${ASK:-y}; }
-function ask-no { echo -ne "${CYELLOW} $1 [y/N]: ${CDEFAULT}"; read ASK; ASK="$(echo $ASK | tr '[:upper:]' '[:lower:]')"; export ASK=${ASK:-n}; }
+function ask-yes { echo -ne "${CYELLOW} $1 [Y/n]: ${CDEFAULT}"; read ASK; ASK="$(echo $ASK | tr '[:upper:]' '[:lower:]' | head -c 1)"; export ASK=${ASK:-y}; }
+function ask-no { echo -ne "${CYELLOW} $1 [y/N]: ${CDEFAULT}"; read ASK; ASK="$(echo $ASK | tr '[:upper:]' '[:lower:]' | head -c 1)"; export ASK=${ASK:-n}; }
 function ask-enter { echo -e "${CYELLOW} $1: [Press enter to continue]${CDEFAULT}" ; read; }
 function ask-password { echo -ne "${CYELLOW} $1: ${CDEFAULT}" ; read -s ASK; echo; }
 
@@ -38,6 +38,12 @@ if ! which realpath &> /dev/null; then
   function realpath {
     python -c "import os; print(os.path.realpath('$1'))"
   }
+fi
+
+if ! command -v timeout &> /dev/null; then
+  if command -v gtimeout &> /dev/null; then
+    alias timeout=gtimeout
+  fi
 fi
 
 function json_escape { printf '%s' "$1" | python -c 'import json,sys; print(json.dumps(sys.stdin.read()))'; }
@@ -103,6 +109,11 @@ alias cdlh='cd /var/log/httpd'
 
 function md { mkdir $1; cd $1; }
 alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
+alias ......='cd ../../../../..'
+alias .......='cd ../../../../../..'
 alias cd..='cd ..'
 function susu { sudo su "${@}"; if [[ $? == 123 ]]; then exit 1; fi; }
 function susub { 
@@ -155,9 +166,15 @@ alias dm-mig='dm makemigrations; dm migrate'
 
 function git-branch-name {
   if git rev-parse &> /dev/null; then
-    echo -n `git rev-parse --abbrev-ref HEAD`:`git rev-parse --short HEAD`
+    BRANCH_NAME=`git rev-parse --abbrev-ref HEAD 2>/dev/null`
+    BRANCH_HASH=`git rev-parse --short HEAD 2>/dev/null`
+    if [ -z "$BRANCH_HASH" ]; then
+      BRANCH_HASH="<new>"
+    fi
+    echo -n "$BRANCH_NAME:$BRANCH_HASH"
   fi
 }
+
 alias gits='git status'
 alias gita='git add -A'
 alias gitan='git add -An'
@@ -322,6 +339,7 @@ function clean-comments { cat "$1" | grep -Ev "^\s*;"; }
 alias sync-time='ntpdate pool.ntp.org'
 function fix-time { ntpdate time.nist.gov; chkconfig ntpd on; service ntpd start; }
 function mst-time { if [ -f "/usr/share/zoneinfo/America/Edmonton" ]; then rm -f /etc/localtime; ln -fs /usr/share/zoneinfo/America/Edmonton /etc/localtime; fi; }
+function utc-time { if [ -f "/usr/share/zoneinfo/UTC" ]; then rm -f /etc/localtime; ln -fs /usr/share/zoneinfo/UTC /etc/localtime; fi; }
 alias encrypt-file='gpg --cipher-algo AES256 --symmetric $1'
 alias decrypt-file='gpg'
 alias regex='$BASHRC_DIR/regex.py'
@@ -576,4 +594,25 @@ function leeroy {
   echo -ne 'S!!!'
 }
 
-
+function testport {
+  REMOTE_HOST="$1"
+  REMOTE_PORT="$2"
+  if command -v telnet &> /dev/null; then
+    if echo "" | timeout 2 telnet "$REMOTE_HOST" "$REMOTE_PORT" 2>/dev/null | grep -q Connected; then
+      msg-success "Connected to $REMOTE_HOST on port $REMOTE_PORT"
+      return 0
+    else
+      msg-error "Could not connect to $REMOTE_HOST on port $REMOTE_PORT"
+      return 1
+    fi
+  elif command -v nc &> /dev/null; then
+    CONNECTION_RESULT=`timeout 2 nc -w 2 -z "$REMOTE_HOST" "$REMOTE_PORT" 2>&1`
+    if echo "$CONNECTION_RESULT" | grep -q Connection; then
+      msg-success "Connected to $REMOTE_HOST on port $REMOTE_PORT"
+      return 0
+    else
+      msg-error "Could not connect to $REMOTE_HOST on port $REMOTE_PORT"
+      return 1
+    fi
+  fi
+}
