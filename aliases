@@ -71,6 +71,8 @@ function f {
   grep "$1" -R .
 }
 alias hig='history | grep'
+function m { if type "$1" | grep -q 'is a shell builtin'; then   /usr/bin/man bash | less -p "^       $1 "; else   /usr/bin/man "$1"; fi }
+
 
 function bak {
   FILE_TO_BACKUP=`realpath "$1"`
