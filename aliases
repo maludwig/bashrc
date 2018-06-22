@@ -328,6 +328,10 @@ function hush {
   ssh "$SVR" -- 'touch ~/.hushlogin'
 } 
 
+# You may need to run this to use sudo
+function ssh-disable-tty {
+  ssh -t "$1" -- "sudo sed -i.bak -E 's/^Defaults requiretty/# Defaults requiretty/' /etc/sudoers"
+}
 # If you have a welcome banner and it is mucking with rsync, try: hush SERVERFQDN
 alias rsync-sudo='rsync -e "ssh -tt" --progress --rsync-path="sudo rsync"'
 alias rsync-limited='rsync --progress --bwlimit=1000'
