@@ -109,6 +109,16 @@ alias cdr='cd /splice/local/lib/realtalk360'
 alias cdla='cd /var/log/asterisk'
 alias cdlh='cd /var/log/httpd'
 
+alias awk1='awk { print $1 }'
+alias awk2='awk { print $2 }'
+alias awk3='awk { print $3 }'
+alias awk4='awk { print $4 }'
+alias awk5='awk { print $5 }'
+alias awk6='awk { print $6 }'
+alias awk7='awk { print $7 }'
+alias awk8='awk { print $8 }'
+alias awk9='awk { print $9 }'
+
 function md { mkdir $1; cd $1; }
 alias ..='cd ..'
 alias ...='cd ../..'
