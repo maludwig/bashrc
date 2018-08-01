@@ -200,6 +200,45 @@ function gitac { git add -A; git commit -m "$1"; }
 function gitacp { git add -A; git commit -m "$1"; git push origin HEAD; }
 function gitcp { git commit -m "$1" ; git push origin HEAD; }
 function bashrc-update { cd $BASHRC_DIR; gitpull; . main; }
+function git-can-ffwd-from { 
+  FROM_REF="$1" 
+  TO_REF="${2-HEAD}" 
+  USAGE="git-can-ffwd-from <ancestor_ref> [future_ref]"
+  git fetch --all
+  FROM_BRANCH="$(git rev-parse --symbolic-full-name --abbrev-ref $FROM_REF 2>&1)"
+  if [[ $? != 0 ]]; then
+    msg-error "Error"
+    msg-error "$FROM_BRANCH"
+    return 10
+  fi
+  if [[ $FROM_BRANCH == "" ]]; then
+    msg-error "Branch not found $FROM_REF"
+    return 20
+  fi
+  TO_BRANCH="$(git rev-parse --symbolic-full-name --abbrev-ref $TO_REF 2>&1)"
+  if [[ $? != 0 ]]; then
+    msg-error "Error"
+    msg-error "$TO_BRANCH"
+    return 10
+  fi
+  if [[ $TO_BRANCH == "" ]]; then
+    msg-error "Branch not found $TO_REF"
+    return 20
+  fi
+  echo "
+    FROM_BRANCH='$FROM_BRANCH'
+    TO_BRANCH='$TO_BRANCH'
+  "
+  if git merge-base --is-ancestor "$FROM_BRANCH" "$TO_BRANCH"; then
+    echo "'$FROM_BRANCH' can be fast-forwarded to '$TO_BRANCH'"
+  elif git merge-base --is-ancestor "$TO_BRANCH" "$FROM_BRANCH"; then
+    echo "'$FROM_BRANCH' is ahead of '$TO_BRANCH'"
+    return 1
+  else
+    echo "'$FROM_BRANCH' is unrelated to '$TO_BRANCH'"
+    return 2
+  fi
+}
 
 # Mercurial aliases
 function hg-clone { hg clone ssh://hg@spliceserver2:/$1; }
