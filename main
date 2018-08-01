@@ -78,6 +78,8 @@ if [[ "$BASHRC_LOADED" != "yes" ]]; then
     PATH="$HOME/bin:$PATH"
   fi
 
+  . $BASHRC_DIR/secrecy.sh
+
   # You can extend your bashrc with an entry in your local ~/profile.d
   if [ -d "$HOME/profile.d" ] ; then
     # Apply additional profile scripts if they exist
