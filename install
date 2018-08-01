@@ -8,27 +8,21 @@ if [ -d /etc/bashrc.extensions ]; then
 fi
 cp -r "$SCRIPTDIR/" /etc/bashrc.extensions/
 
-if [ -d /etc/profile.d/ ]; then
-  echo "Updating /etc/profile.d/bashrc.extensions.sh"
-  echo "source /etc/bashrc.extensions/main" > /etc/profile.d/bashrc.extensions.sh
-  chmod 755 /etc/profile.d/bashrc.extensions.sh
-else
-  if [ -f /etc/bashrc ]; then
-    echo "source /etc/bashrc.extensions/main" >> /etc/bashrc
-  elif [ -f /etc/bash.bashrc ]; then
-    echo "source /etc/bashrc.extensions/main" >> /etc/bash.bashrc
+if [ -f /etc/bashrc ]; then
+  echo "source /etc/bashrc.extensions/main" >> /etc/bashrc
+elif [ -f /etc/bash.bashrc ]; then
+  echo "source /etc/bashrc.extensions/main" >> /etc/bash.bashrc
+fi
+if [ -f /root/.bashrc ]; then
+  # If the common bashrc is not sourced
+  if ! grep -q ' /etc/bashrc' /root/.bashrc; then
+    echo "source /etc/bashrc.extensions/main" >> /root/.bashrc
   fi
-  if [ -f /root/.bashrc ]; then
-    # If the common bashrc is not sourced
-    if ! grep -q ' /etc/bashrc' /root/.bashrc; then
-      echo "source /etc/bashrc.extensions/main" >> /root/.bashrc
-    fi
-  fi
-  if [ -d /private/var/root/ ]; then
-    # OSX specific install
-    echo "source /etc/bashrc.extensions/main" >> /private/var/root/.bashrc
-    chsh -s /bin/bash
-  fi
+fi
+if [ -d /private/var/root/ ]; then
+  # OSX specific install
+  echo "source /etc/bashrc.extensions/main" >> /private/var/root/.bashrc
+  chsh -s /bin/bash
 fi
 
 if ! [ -d "$HOME/profile.d" ]; then
