@@ -20,9 +20,11 @@ if [[ "$BASHRC_LOADED" != "yes" ]]; then
 
   function assert-path {
     if [ -d "$1" ]; then
-      if ! echo ":${PATH}:" | grep -q ":${1}:"; then PATH=$PATH:$1 ; fi
+      if ! echo ":${PATH}:" | grep -q ":${1}:"; then PATH="$PATH:$1" ; fi
     fi
+    export PATH
   }
+  
 
   assert-path "${HOME}/bin"
   assert-path "/bin"
