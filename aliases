@@ -691,3 +691,11 @@ n; b loop"
   fi
 }
 
+
+RAINBOW=(${CYELLOW} ${CGREEN} ${CCYAN} ${CBLUE} ${CPINK} ${CRED})
+function rainbow-sleep {
+  sleep "$1"
+  HEAD_COLOR="${RAINBOW[0]}"
+  RAINBOW=("${RAINBOW[@]:1}" "$HEAD_COLOR")
+  echo -ne "${HEAD_COLOR}.${CDEFAULT}"
+}
