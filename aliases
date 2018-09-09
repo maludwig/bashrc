@@ -699,3 +699,15 @@ function rainbow-sleep {
   RAINBOW=("${RAINBOW[@]:1}" "$HEAD_COLOR")
   echo -ne "${HEAD_COLOR}.${CDEFAULT}"
 }
+
+function toggle_return_code_prompt {
+  if [[ -z $RETCODEPROMPT ]]; then
+    RETCODEPROMPT=1
+    OLD_PROMPT_COMMAND="$PROMPT_COMMAND"
+    PROMPT_COMMAND='LASTRETCODE=$?; [[ $LASTRETCODE == 0 ]] && echo -en "$CGREEN[✔] $CDEFAULT" || echo -en "$CRED[❌]($LASTRETCODE) ";'"$PROMPT_COMMAND"
+  else
+    RETCODEPROMPT=
+    PROMPT_COMMAND="$OLD_PROMPT_COMMAND"
+  fi
+}
+
