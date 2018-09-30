@@ -1,5 +1,7 @@
 #!/bin/bash
 
+HISTCONTROL=ignorespace:ignoredups
+
 function unlock-secrets {
   if ! [[ -f $HOME/.secrets ]]; then
     msg-info "This is your first time setting up a secret hoard"

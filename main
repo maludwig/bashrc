@@ -1,6 +1,6 @@
 #!/bin/bash
-# Record this directory for later reference
 if [[ "$BASHRC_LOADED" != "yes" ]]; then
+  # Record this directory for later reference
   export BASHRC_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
   # Bash colors
@@ -58,18 +58,12 @@ if [[ "$BASHRC_LOADED" != "yes" ]]; then
     PS1="${CUSER}%n@${CYELLOW}${HOST_ALIAS}:${CGREEN}%~${CDEFAULT}"$'\n$ '
     # PS1="%{$fg[red]%}%n%{$reset_color%}@%{$fg[blue]%}%m %{$fg[yellow]%}%~ %{$reset_color%}%% "
   fi
-  case $TERM in
-    xterm*)
-      PROMPT_COMMAND='echo -ne "\033]0;${HOST_ALIAS}:${PWD/#$HOME/~}"; echo -ne "\007"; echo -ne "${CCYAN}[$(date-8601-local)] ${CYELLOW}$(git-branch-name) ${CDEFAULT}";'
-      ;;
-    screen)
-      PROMPT_COMMAND='echo -ne "\033_${HOST_ALIAS}:${PWD/#$HOME/~}"; echo -ne "\033\\"; echo -ne "${CCYAN}[$(date-8601-local)]: ${CDEFAULT}";'
-      ;;
-    cygwin)
-      #PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOST_ALIAS}:${PWD/#$HOME/~}"; echo -ne "\007"'
-      PROMPT_COMMAND='echo -ne "\033]0;${PWD/#$HOME/~}"; echo -ne "\007"'
-      ;;
-  esac
+  function assert_in_prompt_command {
+    if ! echo "$PROMPT_COMMAND" | grep -q -F "$1"; then
+      PROMPT_COMMAND="$1;$PROMPT_COMMAND"
+    fi
+  }
+  assert_in_prompt_command 'echo -ne "${CCYAN}[$(date-8601-local)] ${CYELLOW}$(git-branch-name) ${CDEFAULT}"'
 
   # Bash history improvements
   if [ -f $BASHRC_DIR/history ]; then
@@ -111,4 +105,3 @@ if [[ "$BASHRC_LOADED" != "yes" ]]; then
   fi
   BASHRC_LOADED="yes"
 fi
-
