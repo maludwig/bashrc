@@ -52,7 +52,7 @@ if [[ "$BASHRC_LOADED" != "yes" ]]; then
   fi
 
   if [ -n "$BASH_VERSION" ]; then
-    PS1="${CUSER}\u@${CYELLOW}${HOST_ALIAS}:${CGREEN}\w${CDEFAULT}\n$ "
+    PS1="\[${CUSER}\]\u@\[${CYELLOW}\]${HOST_ALIAS}:\[${CGREEN}\]\w\[${CDEFAULT}\] \n\$ "
   elif [ -n "$ZSH_VERSION" ]; then
     precmd() { eval "$PROMPT_COMMAND"; }
     PS1="${CUSER}%n@${CYELLOW}${HOST_ALIAS}:${CGREEN}%~${CDEFAULT}"$'\n$ '
@@ -64,6 +64,7 @@ if [[ "$BASHRC_LOADED" != "yes" ]]; then
     fi
   }
   assert_in_prompt_command 'echo -ne "${CCYAN}[$(date-8601-local)] ${CYELLOW}$(git-branch-name) ${CDEFAULT}"'
+  assert_in_prompt_command 'add_to_backlist'
 
   # Bash history improvements
   if [ -f $BASHRC_DIR/history ]; then

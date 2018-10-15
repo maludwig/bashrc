@@ -715,3 +715,33 @@ function toggle_return_code_prompt {
   fi
 }
 
+add_to_backlist () { 
+    NEWBACKLIST=("$PWD");
+    for ONEDIR in ${BACKLIST[@]}; do
+        if [[ "$ONEDIR" != "$PWD" ]]; then
+            NEWBACKLIST+=("$ONEDIR");
+        fi;
+    done;
+    BACKLIST=("${NEWBACKLIST[@]}")
+}
+
+go_back_to_match () {
+    REGEX=`echo "$@" | sed -E 's| |.*/.*|g'`'[^/]*$';
+    msg-info "Regex: $REGEX"
+    for ONEDIR in ${BACKLIST[@]}; do
+        if echo "$ONEDIR" | grep --color=auto --color=auto -E "$REGEX"; then
+            cd "$ONEDIR";
+            break;
+        fi;
+    done
+}
+
+alias b='go_back_to_match'
+alias bc='go_back_to_match "$PWD"'
+
+print_backlist () {
+    for ONEDIR in ${BACKLIST[@]};
+    do
+        msg-dry "- $ONEDIR";
+    done;
+}
