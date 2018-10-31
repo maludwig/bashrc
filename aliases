@@ -131,7 +131,7 @@ alias .....='cd ../../../..'
 alias ......='cd ../../../../..'
 alias .......='cd ../../../../../..'
 alias cd..='cd ..'
-function susu { sudo su "${@}"; if [[ $? == 123 ]]; then exit 1; fi; }
+function susu { sudo su - "${@}"; if [[ $? == 123 ]]; then exit 1; fi; }
 function susub { 
   OTHER_USER="${1-root}"
   if [[ "$OTHER_USER" == "root" ]]; then
@@ -737,7 +737,7 @@ go_back_to_match () {
 }
 
 alias b='go_back_to_match'
-alias bc='go_back_to_match "$PWD"'
+alias bac='go_back_to_match "$PWD"'
 
 print_backlist () {
     for ONEDIR in ${BACKLIST[@]};
