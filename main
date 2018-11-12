@@ -13,7 +13,7 @@ if [[ "$BASHRC_LOADED" != "yes" ]]; then
     . $BASHRC_DIR/aliases
   fi
   # Default variables
-  export HOST_ALIAS=`hostname -f`
+  HOST_ALIAS='\H'
   if [[ "$USER" == "" ]]; then
     USER="${USERNAME}"
   fi
