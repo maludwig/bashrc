@@ -54,7 +54,7 @@ alias mark='MARK="$(realpath .)"'
 alias back='cd "$MARK"'
 alias flick='FLICK="$(realpath .)";cd "$MARK";MARK="$FLICK"'
 alias flickto='MARK="$(realpath .)";cd'
-function cdf { cd "$(dirname $1)"; }
+function cdf { cd "$(dirname "$1")"; }
 
 # Bash aliases
 alias l='ls --color'
