@@ -9,31 +9,41 @@
 #37 = white
 
 if [ -n "$BASH_VERSION" ]; then
-	export CBLACK="\033[0;30m"
-	export CRED="\033[0;31m"
-	export CGREEN="\033[0;32m"
-	export CYELLOW="\033[0;33m"
-	export CBLUE="\033[0;34m"
-	export CPINK="\033[0;35m"
-	export CCYAN="\033[0;36m"
-	export CWHITE="\033[0;37m"
-	export CDEFAULT="\033[0m"
+  CBLACK="\033[0;30m"
+  CRED="\033[0;31m"
+  CGREEN="\033[0;32m"
+  CYELLOW="\033[0;33m"
+  CBLUE="\033[0;34m"
+  CPINK="\033[0;35m"
+  CCYAN="\033[0;36m"
+  CWHITE="\033[0;37m"
+  CDEFAULT="\033[0m"
+
+  PBLACK="\001\033[0;30m\002"
+  PRED="\001\033[0;31m\002"
+  PGREEN="\001\033[0;32m\002"
+  PYELLOW="\001\033[0;33m\002"
+  PBLUE="\001\033[0;34m\002"
+  PPINK="\001\033[0;35m\002"
+  PCYAN="\001\033[0;36m\002"
+  PWHITE="\001\033[0;37m\002"
+  PDEFAULT="\001\033[0m\002"
 elif [ -n "$ZSH_VERSION" ]; then
-	autoload -U colors && colors
-	export CBLACK="$fg[black]"
-	export CRED="$fg[red]"
-	export CGREEN="$fg[green]"
-	export CYELLOW="$fg[yellow]"
-	export CBLUE="$fg[blue]"
-	export CPINK="$fg[magenta]"
-	export CCYAN="$fg[cyan]"
-	export CWHITE="$fg[white]"
-	export CDEFAULT="$reset_color"
+  autoload -U colors && colors
+  CBLACK="$fg[black]"
+  CRED="$fg[red]"
+  CGREEN="$fg[green]"
+  CYELLOW="$fg[yellow]"
+  CBLUE="$fg[blue]"
+  CPINK="$fg[magenta]"
+  CCYAN="$fg[cyan]"
+  CWHITE="$fg[white]"
+  CDEFAULT="$reset_color"
 fi
 
 if [[ "$USER" = "root" ]]; then
-	CUSER="${CRED}"
+  CUSER="${CRED}"
 else
-	CUSER="${CGREEN}"
+  CUSER="${CGREEN}"
 fi
 

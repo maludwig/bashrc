@@ -15,3 +15,14 @@ cd "$HOME"
 
 # This is all just normal bash that is just run as if you'd directly typed it in with your hands
 
+
+# Default prompt, see this for details:
+#   http://tldp.org/HOWTO/Bash-Prompt-HOWTO/bash-prompt-escape-sequences.html
+PS1='\u@\H:${PWD} \$'
+
+# Show the git branch name in yellow
+ps1_add_fn git-branch-name YELLOW '' ' '
+# Show the UTC ISO-8601 timestamp in green
+ps1_add_fn date-8601 GREEN
+# Show the local time ISO-8601 timestamp in cyan
+ps1_add_fn date-8601-local CYAN
