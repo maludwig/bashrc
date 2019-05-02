@@ -773,3 +773,7 @@ n; b loop"
 
 
 alias wtfdocker='echo docker run -it -p HOST:CONTAINER -v HOSTDIR:CONTAINERDIR maludwig/mitchubuntu:1.2'
+
+function rows_in_a_and_b { comm -12 "$@"; }
+function rows_in_a_but_not_b { comm -23 "$@"; }
+function rows_in_b_but_not_a { comm -13 "$@"; }
