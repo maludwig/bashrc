@@ -155,7 +155,7 @@ function op_login {
       OP_EMAIL="$ASK"
       ask-default "What is your 1Password account master key?" "AA-BBBBBB-CCCCCC-DDDDDD-EEEEEE-FFFFF-GGGG"
       OP_ACCOUNT_KEY="$ASK"
-      eval $(op signin "$OP_URL" "$OP_EMAIL" "$OP_ACCOUNT_KEY")
+      eval $(op signin "$OP_HOST" "$OP_EMAIL" "$OP_ACCOUNT_KEY")
     fi
   fi
 }
