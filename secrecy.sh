@@ -147,28 +147,15 @@ function op_login {
   else
     if [ -f "$HOME/.op/config" ]; then
       SHORTHAND=`cat "$HOME/.op/config" | jq '.accounts[0].shorthand' | tr -d '"'`
-      unlock-secrets
-      OP_PASSWORD=`print-secret "op-password"`
-      if [[ "$?" != "0" ]] || [[ "$OP_PASSWORD" == "" ]]; then
-        msg-error "1Password login not in secrets"
-        ask-password "What is your 1Password password?"
-        OP_PASSWORD="$ASK"
-        ASK=''
-        set-secret "op-password" "$OP_PASSWORD"
-      fi
-      eval $(op signin "$SHORTHAND" "$OP_PASSWORD")
+      eval $(op signin "$SHORTHAND")
     else
       ask-default "What is your 1Password login host?" "my.1password.com"
       OP_HOST="$ASK"
       ask "What is your email (ex. $USER@your-company.com) ?"
       OP_EMAIL="$ASK"
-      ask-password "What is your 1Password password?"
-      OP_PASSWORD="$ASK"
-      ASK=''
-      set-secret "op-password" "$OP_PASSWORD"
       ask-default "What is your 1Password account master key?" "AA-BBBBBB-CCCCCC-DDDDDD-EEEEEE-FFFFF-GGGG"
       OP_ACCOUNT_KEY="$ASK"
-      eval $(op signin "$OP_URL" "$OP_EMAIL" "$OP_ACCOUNT_KEY" "$OP_PASSWORD")
+      eval $(op signin "$OP_URL" "$OP_EMAIL" "$OP_ACCOUNT_KEY")
     fi
   fi
 }
