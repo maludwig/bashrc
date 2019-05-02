@@ -846,3 +846,36 @@ function toggle_return_code_prompt {
     PROMPT_COMMAND="$OLD_PROMPT_COMMAND"
   fi
 }
+
+
+sort_inplace () {
+  THEFILE="$1";
+  shift;
+  mv "$THEFILE" "$THEFILE.unsorted";
+  cat "$THEFILE" | sort "$@" > "$THEFILE";
+}
+
+lineseps () {
+  LINECOUNT="${1:-5}"
+  LINE_SEPARATOR="${2:-========================================}"
+  SEDCMD=': loop; '
+  if [ "$LINECOUNT" -ge 2 ]; then
+    for IDX in `seq 2 $LINECOUNT`; do
+      SEDCMD="${SEDCMD}n; "
+    done
+  fi
+  SEDCMD="${SEDCMD}a ${LINE_SEPARATOR}
+n; b loop"
+  if command -v gsed &> /dev/null; then
+    cat - | gsed "$SEDCMD"
+  else
+    cat - | sed "$SEDCMD"
+  fi
+}
+
+
+alias wtfdocker='echo docker run -it -p HOST:CONTAINER -v HOSTDIR:CONTAINERDIR maludwig/mitchubuntu:1.2'
+
+function rows_in_a_and_b { comm -12 "$@"; }
+function rows_in_a_but_not_b { comm -23 "$@"; }
+function rows_in_b_but_not_a { comm -13 "$@"; }
