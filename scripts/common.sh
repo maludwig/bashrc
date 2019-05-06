@@ -29,9 +29,9 @@ PERFORMING_MANUAL_QA="no"
 
 OLDIFS="$IFS"
 IFS=$'\n'
-ALL_SOURCE_FILES=($(find "$SCRIPT_DIR/src" -type f -name '*.sh' | sort))
-ALL_TEST_FILES=($(find "$SCRIPT_DIR/test" -type f -name '*.sh' | sort))
-ALL_QA_FILES=($(find "$SCRIPT_DIR/qa" -type f -name '*.sh' | sort))
+ALL_SOURCE_FILES=($(find "$SCRIPT_DIR/src" -type f -name '*.sh' | LC_COLLATE=C sort))
+ALL_TEST_FILES=($(find "$SCRIPT_DIR/test" -type f -name '*.sh' | LC_COLLATE=C sort))
+ALL_QA_FILES=($(find "$SCRIPT_DIR/qa" -type f -name '*.sh' | LC_COLLATE=C sort))
 IFS="$OLDIFS"
 
 for SOURCE_FILE in "${ALL_SOURCE_FILES[@]}"; do

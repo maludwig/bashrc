@@ -4,35 +4,6 @@
 # Script include
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-function echo-err { echo "$@" 1>&2; }
-
-function date-today { echo $(date +%F); }
-function date-second { echo $(date +%F_%H-%M-%S); }
-function date-8601 { date -u +%Y-%m-%dT%H:%M:%S%z; }
-function date-8601-local { date +%Y-%m-%dT%H:%M:%S%z; }
-function log-8601 { echo "[ $(date-8601) ] $@"; }
-function log-8601-local { echo "[ $(date-8601-local) ] $@"; }
-function log-err-8601 { echo-err "[ $(date-8601) ] $@"; }
-function log-err-8601-local { echo-err "[ $(date-8601-local) ] $@"; }
-
-function ask { echo -ne "${CYELLOW} $1: ${CDEFAULT}"; read ASK; export ASK; }
-function ask-default { echo -ne "${CYELLOW} $1 [$2]: ${CDEFAULT}"; read ASK; export ASK=${ASK:-$2}; }
-function ask-yes { echo -ne "${CYELLOW} $1 [Y/n]: ${CDEFAULT}"; read ASK; ASK="$(echo $ASK | tr '[:upper:]' '[:lower:]' | head -c 1)"; export ASK=${ASK:-y}; }
-function ask-no { echo -ne "${CYELLOW} $1 [y/N]: ${CDEFAULT}"; read ASK; ASK="$(echo $ASK | tr '[:upper:]' '[:lower:]' | head -c 1)"; export ASK=${ASK:-n}; }
-function ask-enter { echo -e "${CYELLOW} $1: [Press enter to continue]${CDEFAULT}" ; read; }
-function ask-password { echo -ne "${CYELLOW} $1: ${CDEFAULT}" ; read -s ASK; echo; }
-
-function msg-error { echo -e "${CRED}${@}${CDEFAULT}"; }
-function msg-info { echo -e "${CCYAN}${@}${CDEFAULT}"; }
-function msg-success { echo -e "${CGREEN}${@}${CDEFAULT}"; }
-function msg-dry { echo -e "${CPINK}${@}${CDEFAULT}"; }
-
-function each-line { for var in "$@"; do echo "$var"; done; }
-
-function trim-leading { echo "$1" | sed -e 's/^[[:space:]]*//'; }
-function trim-trailing { echo "$1" | sed -e 's/[[:space:]]*$//'; }
-function trim { trim-leading `trim-trailing "$1"`; }
-
 # OSX does not have realpath
 if ! which realpath &> /dev/null; then
   function realpath {
@@ -659,24 +630,41 @@ function leeroy {
 function testport {
   REMOTE_HOST="$1"
   REMOTE_PORT="$2"
-  if command -v telnet &> /dev/null; then
-    if echo "" | timeout 2 telnet "$REMOTE_HOST" "$REMOTE_PORT" 2>/dev/null | grep -q Connected; then
-      msg-success "Connected to $REMOTE_HOST on port $REMOTE_PORT"
-      return 0
+  ALL_LOCAL_IPS=`ifconfig | grep 'inet ' | grep -v '127.0.0.1' | sed -E 's/^.*inet( | addr:)([0-9.]*) .*/\2/' | sort`
+  RETURN_VALUE=1
+  for LOCAL_IP in $ALL_LOCAL_IPS; do
+    if echo "$LOCAL_IP" | grep -Eq '^[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*$'; then
+      if command -v telnet &> /dev/null; then
+        # telnet has two versions with differention ways to specify a bind/source address
+        if echo "" | timeout 2 telnet -b "$LOCAL_IP" "$REMOTE_HOST" "$REMOTE_PORT" 2>/dev/null | grep -q Connected; then
+          msg-success "Connected to $REMOTE_HOST on port $REMOTE_PORT with $LOCAL_IP"
+          RETURN_VALUE=0
+        elif echo "" | timeout 2 telnet -s "$LOCAL_IP" "$REMOTE_HOST" "$REMOTE_PORT" 2>/dev/null | grep -q Connected; then
+          msg-success "Connected to $REMOTE_HOST on port $REMOTE_PORT with $LOCAL_IP"
+          RETURN_VALUE=0
+        else
+          msg-error "Could not connect to $REMOTE_HOST on port $REMOTE_PORT with $LOCAL_IP"
+        fi
+      elif command -v nc &> /dev/null; then
+        echo nc -w 2 -s "$LOCAL_IP" -z "$REMOTE_HOST" "$REMOTE_PORT"
+        CONNECTION_RESULT=`timeout 2 nc -w 2 -s "$LOCAL_IP" -z "$REMOTE_HOST" "$REMOTE_PORT" 2>&1`
+        if echo "$CONNECTION_RESULT" | grep -q Connection; then
+          msg-success "Connected to $REMOTE_HOST on port $REMOTE_PORT with $LOCAL_IP"
+          RETURN_VALUE=0
+        else
+          msg-error "Could not connect to $REMOTE_HOST on port $REMOTE_PORT with $LOCAL_IP"
+        fi
+      fi
     else
-      msg-error "Could not connect to $REMOTE_HOST on port $REMOTE_PORT"
-      return 1
+      msg-error "
+        $LOCAL_IP is not a valid IPv4 address, this is a bug in the testport function
+        You can use:
+          declare -f testport
+        to see the function definition.
+      "
     fi
-  elif command -v nc &> /dev/null; then
-    CONNECTION_RESULT=`timeout 2 nc -w 2 -z "$REMOTE_HOST" "$REMOTE_PORT" 2>&1`
-    if echo "$CONNECTION_RESULT" | grep -q Connection; then
-      msg-success "Connected to $REMOTE_HOST on port $REMOTE_PORT"
-      return 0
-    else
-      msg-error "Could not connect to $REMOTE_HOST on port $REMOTE_PORT"
-      return 1
-    fi
-  fi
+  done
+  return $RETURN_VALUE
 }
 
 
@@ -739,114 +727,6 @@ print_backlist () {
     done;
 }
 
-function toggle_string_in_var {
-  INNER_STRING="$1"
-  VARIABLE_NAME="$2"
-  if ! eval echo '"${'"${VARNAME}"'}"' | grep -q -F "$INNER_STRING"; then
-    eval "$VARIABLE_NAME="'"$INNER_STRING"$'"$VARIABLE_NAME"
-  else
-    CLEAN_SED_STRING="$(echo "$INNER_STRING" | sed 's:[]\[^$.*/]:\\&:g')"
-    eval "$VARIABLE_NAME="'"$(echo "${'$VARIABLE_NAME'}" | sed "s/$CLEAN_SED_STRING//")"'
-  fi
-}
-
-# NOTE: Do not put functions in here that produce output on stdout, use ps1_add_fn instead
-#   You can put functions in here that cannot run in a subshell
-function assert_in_prompt_command {
-  if ! echo "$PROMPT_COMMAND" | grep -q -F "$1"; then
-    PROMPT_COMMAND="$1;$PROMPT_COMMAND"
-  fi
-}
-function toggle_in_prompt_command {
-  if ! echo "$PROMPT_COMMAND" | grep -q -F "$1"; then
-    PROMPT_COMMAND="$1;$PROMPT_COMMAND"
-  else
-    PROMPT_COMMAND="$(echo "$PROMPT_COMMAND" | sed -F "s/$1;//")"
-  fi
-}
-
-# NOTE: Put functions in here that produce output on stdout, use ps1_add_fn instead
-function ps1_add_fn {
-    FN_NAME="$1"
-    COLOR_NAME="${2:-DEFAULT}"
-    PREFIX='['
-    SUFFIX='] '
-    if [[ $# > 2 ]]; then
-        PREFIX="$3"
-        if [[ $# > 3 ]]; then
-            SUFFIX="$4"
-        fi
-    fi
-    echo "Adding $FN_NAME to PS1 with color: $COLOR_NAME"
-    NEW_PROMPT='$(echo -ne "\001${C'"${COLOR_NAME}"'}\002'"${PREFIX}"'$('$FN_NAME')'"${SUFFIX}"'${PDEFAULT}")'
-    PS1="$NEW_PROMPT""$PS1"
-}
-
-function ps1_toggle_fn {
-    FN_NAME="$1"
-    COLOR_NAME="${2:-DEFAULT}"
-    PREFIX='['
-    SUFFIX='] '
-    if [[ $# > 2 ]]; then
-        PREFIX="$3"
-        if [[ $# > 3 ]]; then
-            SUFFIX="$4"
-        fi
-    fi
-    NEW_PROMPT='$(echo -ne "\001${C'"${COLOR_NAME}"'}\002'"${PREFIX}"'$('$FN_NAME')'"${SUFFIX}"'${PDEFAULT}")'
-    if ! echo "$PS1" | grep -q -F "$NEW_PROMPT"; then
-      PS1="$NEW_PROMPT;$PS1"
-    else
-      PS1="$(echo "$PS1" | sed -F "s/$NEW_PROMPT;//")"
-    fi
-}
-
-function _record_command_start {
-  # Only record the first one
-  if [[ "${_START_SECONDS}" == "" ]]; then
-    _START_SECONDS=`date +%s`
-  fi
-}
-function show_command_runtime {
-  if [[ "${_START_SECONDS}" != "" ]]; then
-    _END_SECONDS=`date +%s`
-    _TOTAL_SECONDS=$[_END_SECONDS - _START_SECONDS]
-    echo "${_TOTAL_SECONDS}s"
-    _END_SECONDS=''
-    _TOTAL_SECONDS=''
-    _START_SECONDS=''
-  fi
-}
-
-function toggle_command_timing {
-  echo
-}
-
-LASTRETCODEMSG=''
-function _last_ret_code {
-  LASTRETCODE=$?
-  if [[ $LASTRETCODE == 0 ]]; then
-    LASTRETCODEMSG="\001${CGREEN}\002[✔]\001${CDEFAULT}\002 "
-  else
-    LASTRETCODEMSG="\001${CRED}\002[X]($LASTRETCODE)\001${CDEFAULT}\002 "
-  fi
-}
-
-function toggle_return_code_prompt {
-  if [[ "$RETCODEPROMPT" == "" ]]; then
-    RETCODEPROMPT=1
-    OLD_PROMPT_COMMAND="$PROMPT_COMMAND"
-    OLD_PS1="$PS1"
-    PS1='$(echo -ne "${LASTRETCODEMSG}")'"$PS1"
-    PROMPT_COMMAND='_last_ret_code;'"$PROMPT_COMMAND"
-  else
-    RETCODEPROMPT=
-    LASTRETCODEMSG=''
-    PS1="$OLD_PS1"
-    PROMPT_COMMAND="$OLD_PROMPT_COMMAND"
-  fi
-}
-
 
 sort_inplace () {
   THEFILE="$1";
@@ -879,3 +759,5 @@ alias wtfdocker='echo docker run -it -p HOST:CONTAINER -v HOSTDIR:CONTAINERDIR m
 function rows_in_a_and_b { comm -12 "$@"; }
 function rows_in_a_but_not_b { comm -23 "$@"; }
 function rows_in_b_but_not_a { comm -13 "$@"; }
+
+whats_listening_on () { local PORT="$1"; sudo lsof -i TCP:"$PORT" | grep -i listen; }

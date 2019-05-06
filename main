@@ -3,10 +3,47 @@ if [[ "$BASHRC_LOADED" != "yes" ]]; then
   # Record this directory for later reference
   export BASHRC_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-  # Bash colors
-  if [ -f $BASHRC_DIR/colors ]; then
-    . $BASHRC_DIR/colors
-  fi
+  load_all_scripts_in_dir () {
+    local SCRIPT_D_DIR
+    local SCRIPT_D_SCRIPT
+    local SCRIPT_BASE_SORT=""
+    for SCRIPT_D_DIR in "$@"; do
+      if [[ -d "$SCRIPT_D_DIR" ]]; then
+        # Apply additional profile scripts if they exist
+        for SCRIPT_D_SCRIPT in "$SCRIPT_D_DIR"/*.sh; do
+          # If the file is readable
+          if [ -r "$SCRIPT_D_SCRIPT" ]; then
+            SCRIPT_BASE_SORT="$SCRIPT_BASE_SORT"$'\n'"$(basename $SCRIPT_D_SCRIPT):$SCRIPT_D_SCRIPT"
+          fi
+        done
+      fi
+    done
+    SCRIPT_BASE_SORT="$(echo "$SCRIPT_BASE_SORT" | LC_COLLATE=C sort)"
+    # echo "Sorted scripts:"
+    # echo "$SCRIPT_BASE_SORT"
+    for SCRIPT_D_SCRIPT in `echo "$SCRIPT_BASE_SORT" | cut -d: -f2`; do
+      if which gdate &> /dev/null; then
+        UNIX_START_TIME=`gdate +%s.%N`
+      else
+        UNIX_START_TIME=`date +%s.%N`
+      fi
+      # echo "Sourcing: $SCRIPT_D_SCRIPT"
+      source "$SCRIPT_D_SCRIPT"
+      if which gdate &> /dev/null; then
+        UNIX_END_TIME=`gdate +%s.%N`
+      else
+        UNIX_END_TIME=`date +%s.%N`
+      fi
+      SLOW_TO_SOURCE=`echo $UNIX_END_TIME $UNIX_START_TIME | awk '{print ((($1-$2)) > 0.2)}'`
+      TOTAL_TIME_IN_MS=`echo $UNIX_END_TIME $UNIX_START_TIME | awk '{ printf("%0.2f",$1-$2) }'`
+      if [ -z "$SUPPRESS_SLOW_SOURCE_WARNING" ]; then
+        if [[ "$SLOW_TO_SOURCE" == "1" ]]; then
+          msg-error "It took ${TOTAL_TIME_IN_MS}s to load $SCRIPT_D_SCRIPT"
+        fi
+      fi
+      done
+  }
+  load_all_scripts_in_dir "$BASHRC_DIR/scripts/src"
 
   # Bash aliases
   if [ -f $BASHRC_DIR/aliases ]; then
@@ -73,31 +110,6 @@ if [[ "$BASHRC_LOADED" != "yes" ]]; then
   . $BASHRC_DIR/secrecy.sh
 
   # You can extend your bashrc with an entry in your local ~/profile.d
-  if [ -d "$HOME/profile.d" ] ; then
-    # Apply additional profile scripts if they exist
-    for sourcefile in $HOME/profile.d/*.sh; do
-      # If the file is readable
-      if [ -r "$sourcefile" ]; then
-        if which gdate &> /dev/null; then
-          UNIX_START_TIME=`gdate +%s.%N`
-        else
-          UNIX_START_TIME=`date +%s.%N`
-        fi
-        . "$sourcefile"
-        if which gdate &> /dev/null; then
-          UNIX_END_TIME=`gdate +%s.%N`
-        else
-          UNIX_END_TIME=`date +%s.%N`
-        fi
-        SLOW_TO_SOURCE=`echo $UNIX_END_TIME $UNIX_START_TIME | awk '{print ((($1-$2)) > 0.2)}'`
-        TOTAL_TIME_IN_MS=`echo $UNIX_END_TIME $UNIX_START_TIME | awk '{ printf("%0.2f",$1-$2) }'`
-        if [ -z "$SUPPRESS_SLOW_SOURCE_WARNING" ]; then
-          if [[ "$SLOW_TO_SOURCE" == "1" ]]; then
-            msg-error "It took ${TOTAL_TIME_IN_MS}s to load $sourcefile"
-          fi
-        fi
-      fi
-    done
-  fi
+  load_all_scripts_in_dir "$HOME/profile.d"
   BASHRC_LOADED="yes"
 fi

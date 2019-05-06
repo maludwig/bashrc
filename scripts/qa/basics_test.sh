@@ -24,10 +24,3 @@ _colors_test () {
   ask-yes "Are these the right colors?" && [[ "$ASK" == "y" ]]
 }
 _colors_test
-
-# if [[ "$USER" = "root" ]]; then
-#   CUSER="${CRED}"
-# else
-#   CUSER="${CGREEN}"
-# fi
-
