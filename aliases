@@ -170,7 +170,8 @@ alias gitch='git checkout'
 alias gitchb='git checkout -b'
 alias gitpush='git push origin HEAD'
 alias gitpull='git pull origin HEAD'
-alias gitgraph='git log --graph --oneline --decorate --date=relative --all --color'
+alias gitgraph='git log --pretty=format:"%C(yellow)%h %C(auto)%d %C(green)%an:%Creset %s %C(cyan) (%cI, %cr)" --all --graph'
+
 function gitac { git add -A; git commit -m "$1"; }
 function gitacp { git add -A; git commit -m "$1"; git push origin HEAD; }
 function gitcp { git commit -m "$1" ; git push origin HEAD; }
@@ -360,6 +361,7 @@ function ssh-disable-tty {
   ssh -t "$1" -- "sudo sed -i.bak -E 's/^Defaults requiretty/# Defaults requiretty/' /etc/sudoers"
 }
 # If you have a welcome banner and it is mucking with rsync, try: hush SERVERFQDN
+function rsyncpath { echo rsync -av "'$(hostname -f):$(realpath "$1" | sed -E 's% %\\ %g')'" ./ ; }
 alias rsync-sudo='rsync -e "ssh -tt" --progress --rsync-path="sudo rsync"'
 alias rsync-limited='rsync --progress --bwlimit=1000'
 alias rsync-sudo-limited='rsync-sudo --bwlimit=1000'
@@ -761,3 +763,11 @@ function rows_in_a_but_not_b { comm -23 "$@"; }
 function rows_in_b_but_not_a { comm -13 "$@"; }
 
 whats_listening_on () { local PORT="$1"; sudo lsof -i TCP:"$PORT" | grep -i listen; }
+cd_find () {
+  FOUND_FILE=`find "$PWD" -name "$1" | head -n1`;
+  if [[ "$FOUND_FILE" == "" ]]; then
+    FOUND_FILE=`find "$PWD" -iname '*'"$1"'*' | head -n1`;
+  fi
+  msg-info "$FOUND_FILE";
+  cdf "$FOUND_FILE"
+}
