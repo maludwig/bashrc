@@ -171,6 +171,7 @@ alias gitchb='git checkout -b'
 alias gitpush='git push origin HEAD'
 alias gitpull='git pull origin HEAD'
 alias gitgraph='git log --pretty=format:"%C(yellow)%h %C(auto)%d %C(green)%an:%Creset %s %C(cyan) (%cI, %cr)" --all --graph'
+alias gitgraphthisbranch='git log --pretty=format:"%C(yellow)%h %C(auto)%d %C(green)%an:%Creset %s %C(cyan) (%cI, %cr)" --graph'
 
 function gitac { git add -A; git commit -m "$1"; }
 function gitacp { git add -A; git commit -m "$1"; git push origin HEAD; }
