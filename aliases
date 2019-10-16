@@ -772,3 +772,7 @@ cd_find () {
   msg-info "$FOUND_FILE";
   cdf "$FOUND_FILE"
 }
+
+alias chmox='chmod +x'
+
+
