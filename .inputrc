@@ -1,0 +1,23 @@
+$if Bash
+    Space: magic-space
+    "\200": beginning-of-line
+    "\201": end-of-line
+    "\202": shell-backward-word
+    "\203": shell-forward-word
+    "\e;": shell-backward-word
+    "\e'": shell-forward-word
+    "\e!": "\200\203"
+    "\e@": "\200\203\203"
+    "\e#": "\200\203\203\203"
+    "\e$": "\200\203\203\203\203"
+    "\e%": "\200\203\203\203\203\203"
+    "\e^": "\200\203\203\203\203\203\203"
+
+    "[Z": "\200get_commands_starting_with '\201' && fc -s $MATCHNUM"
+    "8": "echo one two three four five six seven eight"
+    "*": "echo 'onetwothreefourfivesixseveneight'"
+    "\e\C-r": history-search-backward
+    #"": shell-backward-kill-word
+    #"[3;5~": shell-kill-word 
+$endif
+
