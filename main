@@ -1,4 +1,5 @@
 #!/bin/bash
+
 if [[ "$BASHRC_LOADED" != "yes" ]]; then
   # Record this directory for later reference
   export BASHRC_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -95,7 +96,6 @@ if [[ "$BASHRC_LOADED" != "yes" ]]; then
     PS1="${CUSER}%n@${CYELLOW}${HOST_ALIAS}:${CGREEN}%~${CDEFAULT}"$'\n$ '
     # PS1="%{$fg[red]%}%n%{$reset_color%}@%{$fg[blue]%}%m %{$fg[yellow]%}%~ %{$reset_color%}%% "
   fi
-  assert_in_prompt_command 'echo -ne "${CCYAN}[$(date-8601-local)] ${CYELLOW}$(git-branch-name) ${CDEFAULT}"'
   assert_in_prompt_command 'add_to_backlist'
 
   # Bash history improvements

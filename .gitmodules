@@ -1,0 +1,3 @@
+[submodule "modules/autojump"]
+	path = modules/autojump
+	url = git@github.com:maludwig/autojump.git

@@ -1,19 +1,41 @@
 #!/bin/bash
+set -e
+
+function get_file_owner {
+  ls -ld "$1" | awk 'NR==1 {print $3}'
+}
 
 function clean_source_line {
-  if [ -f "$1" ]; then
-    sed -i '/bashrc.extensions/d' "$1"
+  if [[ -f "$1" ]]; then
+    if [[ "$(get_file_owner "$1")" == "root"; then
+      WITHOUT_BASHRC_EXTENSIONS="$(sudo cat "$1" | grep -v bashrc.extensions)"
+      echo "$WITHOUT_BASHRC_EXTENSIONS" | sudo tee "$1" > /dev/null
+    else
+      WITHOUT_BASHRC_EXTENSIONS="$(cat "$1" | grep -v bashrc.extensions)"
+      echo "$WITHOUT_BASHRC_EXTENSIONS" > "$1"
+    fi
   fi
 }
+
+if ! sudo echo " "; then
+  echo "You must be able to become root to uninstall this software"
+  exit 1
+fi
+
 clean_source_line /etc/bashrc
 clean_source_line /etc/bash.bashrc
 clean_source_line /root/.bashrc
 clean_source_line /private/var/root/.bashrc
+clean_source_line "$HOME/.bashrc"
+clean_source_line "$HOME/.bash_profile"
 
-if [ -d /etc/bashrc.extensions ]; then
-  rm -rf /etc/bashrc.extensions
+if [[ -d /etc/bashrc.extensions ]]; then
+  sudo rm -rf /etc/bashrc.extensions
 fi
-if [ -f /etc/profile.d/bashrc.extensions.sh ]; then
-  rm -f /etc/profile.d/bashrc.extensions.sh
+if [[ -d "$HOME/bashrc.extensions" ]]; then
+  rm -rf "$HOME/bashrc.extensions"
 fi
-
+if [[ -f /etc/profile.d/bashrc.extensions.sh ]]; then
+  sudo rm -f /etc/profile.d/bashrc.extensions.sh
+fi
+echo "bashrc extensions uninstalled successfully"
