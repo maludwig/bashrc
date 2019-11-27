@@ -7,7 +7,7 @@ function get_file_owner {
 
 function clean_source_line {
   if [[ -f "$1" ]]; then
-    if [[ "$(get_file_owner "$1")" == "root"; then
+    if [[ "$(get_file_owner "$1")" == "root" ]]; then
       WITHOUT_BASHRC_EXTENSIONS="$(sudo cat "$1" | grep -v bashrc.extensions)"
       echo "$WITHOUT_BASHRC_EXTENSIONS" | sudo tee "$1" > /dev/null
     else
