@@ -30,6 +30,7 @@ if [[ "$BASHRC_LOADED" != "yes" ]]; then
       fi
       # echo "Sourcing: $SCRIPT_D_SCRIPT"
       source "$SCRIPT_D_SCRIPT"
+      # echo "Done: $SCRIPT_D_SCRIPT"
       if which gdate &> /dev/null; then
         UNIX_END_TIME=`gdate +%s.%N`
       else

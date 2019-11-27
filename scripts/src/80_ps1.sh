@@ -16,14 +16,14 @@ function toggle_string_in_var {
 #   You can put functions in here that cannot run in a subshell
 function assert_in_prompt_command {
   if ! echo "$PROMPT_COMMAND" | grep -q -F "$1"; then
-    PROMPT_COMMAND="$PROMPT_COMMAND;$1"
+    PROMPT_COMMAND="$(echo "$PROMPT_COMMAND;$1" | substitute ";;" ";")"
   fi
 }
 function toggle_in_prompt_command {
   if ! echo "$PROMPT_COMMAND" | grep -q -F "$1"; then
     PROMPT_COMMAND="$PROMPT_COMMAND;$1"
   else
-    PROMPT_COMMAND="$(echo "$PROMPT_COMMAND" | substitute ";$1" "")"
+    PROMPT_COMMAND="$(echo "$PROMPT_COMMAND" | substitute ";$1" "" | substitute ";;" ";")"
   fi
 }
 
