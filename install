@@ -1,40 +1,66 @@
 #!/bin/bash
 
+#set -v
 set -e
 
 SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-echo "bashrc repo found at $SCRIPTDIR"
+if [[ -f "$SCRIPTDIR/scripts/src/10_basics.sh" ]]; then
+  source "$SCRIPTDIR/scripts/src/10_basics.sh"
+  msg-info "bashrc repo found at $SCRIPTDIR"
+else
+  echo "Could not find bashrc repo"
+  exit 1
+fi
 
-echo "Uninstall the software, if it is already installed..."
+if ! commands_exist sudo rsync git python; then
+  msg-error "You must first install sudo, rsync, git, and python"
+  exit 1
+fi
+
+msg-info "Uninstalling the software, if it is already installed..."
 "$SCRIPTDIR/uninstall"
-echo "Successful, continuing with install..."
-
-rsync -av "$SCRIPTDIR/" "$HOME/bashrc.extensions/"
+msg-info "Cloning https://github.com/maludwig/bashrc.git into $HOME/bashrc.extensions/ ..."
+git clone https://github.com/maludwig/bashrc.git "$HOME/bashrc.extensions/"
 
 if [[ -f "$HOME/.bashrc" ]]; then
-  echo -e "\nsource $HOME/bashrc.extensions/main\n" >> "$HOME/.bashrc"
+  msg-info "Adding source line to $HOME/.bashrc"
+  echo -e "\nsource \"$HOME/bashrc.extensions/main\"\n" >> "$HOME/.bashrc"
 elif [[ -f "$HOME/.bash_profile" ]]; then
-  echo -e "\nsource $HOME/bashrc.extensions/main\n" >> "$HOME/.bash_profile"
+  msg-info "Adding source line to $HOME/.bash_profile"
+  echo -e "\nsource \"$HOME/bashrc.extensions/main\"\n" >> "$HOME/.bash_profile"
 fi
 if ! [[ -d "$HOME/profile.d" ]]; then
-  rsync -av "$SCRIPTDIR/profile.d/" "$HOME/profile.d/"
+  msg-info "Copying sample to $HOME/profile.d"
+  rsync -av "$HOME/bashrc.extensions/profile.d/" "$HOME/profile.d/"
+fi
+if [[ "$SHELL" == "/bin/sh" ]]; then
+  msg-info "Setting shell to /bin/bash"
+  if [[ -f /bin/bash ]]; then
+    chsh -s /bin/bash
+  fi
 fi
 
+msg-info "Initializing submodules"
 cd "$HOME/bashrc.extensions"
-git pull
 git submodule update --init --recursive
 
-echo '
+
+msg-success '
 The maludwig/bashrc extensions were installed to: $HOME/bashrc.extensions
   You can delete this directory now, if you like.
   If you want to extend the current set with your own user-specific extensions
-   you can add them to your local ~/profile.d with a .sh extension
-  Check out ~/profile.d/sample.sh for an example.
+    you can add them to your local ~/profile.d with a .sh extension
+  Check out ~/profile.d/50_sample.sh for an example.
   On most platforms /etc/profile.d/*.sh scripts are run for all users.
 
 Restart bash to experience the new world
-
-You may also want to install these for the root user, like so:
-  sudo su -c "$SCRIPTDIR/install"
 '
+if [[ `whoami` != "root" ]]; then
+  msg-info 'You may also want to install these for the root user, like so:'
+  if uname -a | grep -q Darwin; then
+    msg-dry " sudo \"$SCRIPTDIR/install\""
+  else
+    msg-dry "sudo su -c \"$SCRIPTDIR/install\""
+  fi
+fi
 

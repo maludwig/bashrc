@@ -50,7 +50,7 @@ for TEST_FILE in "${ALL_TEST_FILES[@]}"; do
     if "$TEST"; then
       msg-success "Success: $TEST"
     else
-      msg-error "Failure: $TEST"
+      msg-error "Failure: $TEST ($?)"
       exit 1
     fi
   done

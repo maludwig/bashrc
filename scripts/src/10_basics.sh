@@ -87,3 +87,13 @@ function each-line { for var in "$@"; do echo "$var"; done; }
 function trim-leading { echo "$1" | sed -e 's/^[[:space:]]*//'; }
 function trim-trailing { echo "$1" | sed -e 's/[[:space:]]*$//'; }
 function trim { trim-leading `trim-trailing "$1"`; }
+
+commands_exist () { 
+  while [[ "$1" != "" ]]; do
+    if ! command -v "$1" &> /dev/null; then
+      return 1
+    else
+      shift
+    fi
+  done
+}

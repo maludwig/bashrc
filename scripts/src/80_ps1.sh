@@ -1,15 +1,15 @@
 # Requires substitute
-
+#    CLEAN_SED_STRING="$(echo "$INNER_STRING" | sed 's:[]\[^$.*/]:\\&:g')"
 function toggle_string_in_var {
   INNER_STRING="$1"
   VARIABLE_NAME="$2"
-  if ! eval echo '"${'"${VARIABLE_NAME}"'}"' | grep -q -F "$INNER_STRING"; then
-    eval "$VARIABLE_NAME="'"$INNER_STRING"$'"$VARIABLE_NAME"
+  VARIABLE_VALUE="$(eval /bin/echo '"${'"${VARIABLE_NAME}"'}"')"
+  if ! /bin/echo "$VARIABLE_VALUE" | grep -q -F "$INNER_STRING"; then
+    NEW_VALUE="${INNER_STRING}${VARIABLE_VALUE}"
   else
-  
-    CLEAN_SED_STRING="$(echo "$INNER_STRING" | sed 's:[]\[^$.*/]:\\&:g')"
-    eval "$VARIABLE_NAME="'"$(echo "${'$VARIABLE_NAME'}" | substitute "$INNER_STRING" "")"'
+    NEW_VALUE="$(/bin/echo "$VARIABLE_VALUE" | substitute "$INNER_STRING" "")"
   fi
+  eval "$VARIABLE_NAME='$NEW_VALUE'"
 }
 
 # NOTE: Do not put functions in here that produce output on stdout, use ps1_add_fn instead

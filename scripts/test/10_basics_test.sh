@@ -17,6 +17,23 @@ _date-today_test () {
   date-today | grep -qE '^20[0-9][0-9]-[0-1][0-9]-[0-3][0-9]$'
 }
 
+_commands_exist_test () {
+  if commands_exist echo; then
+    if commands_exist rsync git; then
+      if commands_exist msdjnksdjnf; then
+        msg-error "commands_exist found a command that does not exist"
+      else
+        return 0
+      fi
+    else
+      msg-error "commands_exist could not find multiple commands"
+    fi
+  else
+    msg-error "commands_exist could not find echo"
+  fi
+  return 1
+}
+
 # function date-today { echo $(date +%F); }
 # function date-second { echo $(date +%F_%H-%M-%S); }
 # function date-8601 { date -u +%Y-%m-%dT%H:%M:%S%z; }
@@ -44,5 +61,5 @@ _date-today_test () {
 # function trim-trailing { echo "$1" | sed -e 's/[[:space:]]*$//'; }
 # function trim { trim-leading `trim-trailing "$1"`; }
 
-TESTS=(_SCRIPT_DIR_test _echo-err_test _date-today_test)
+TESTS=(_SCRIPT_DIR_test _echo-err_test _date-today_test _commands_exist_test)
 

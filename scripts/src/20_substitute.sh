@@ -9,7 +9,6 @@ ALL_ASCII="$NON_PRINTING_ASCII""$PRINTING_ASCII"
 
 function substitute {
   if [[ "$#" == "2" ]] || [[ "$#" == "3" ]]; then
-    # Input from stdin
     HAYSTACK="$(/bin/cat -)"
     NEEDLE="$1"
     NEEDLESUB="$2"
@@ -19,7 +18,7 @@ function substitute {
     echo "Example:   echo 'hello w' | substitute 'w' 'world'"
     echo "Example:   echo 'hello w' | substitute 'O' 'xxxxx' 'g'"
   fi
-  CLEAN_SED_STRING="$(echo "$NEEDLE" | sed 's:[]\[^$.*/&]:\\&:g')"
-  CLEAN_SED_SUBSTRING="$(echo "$NEEDLESUB" | sed 's:[]\[^$.*/&]:\\&:g')"
-  echo "$HAYSTACK" | sed "s/$CLEAN_SED_STRING/$CLEAN_SED_SUBSTRING/$REGEX_FLAGS"
+  CLEAN_SED_STRING="$(/bin/echo "$NEEDLE" | sed 's:[]\[^$.*/&]:\\&:g')"
+  CLEAN_SED_SUBSTRING="$(/bin/echo "$NEEDLESUB" | sed 's:[]\[^$.*/&]:\\&:g')"
+  /bin/echo "$HAYSTACK" | sed "s/$CLEAN_SED_STRING/$CLEAN_SED_SUBSTRING/$REGEX_FLAGS"
 }
