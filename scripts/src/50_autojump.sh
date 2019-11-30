@@ -6,7 +6,9 @@ elif [[ -f '/usr/share/autojump/autojump.sh' ]]; then
 elif [[ -f '/usr/local/etc/profile.d/autojump.sh' ]]; then
   AUTOJUMP_SH='/usr/share/autojump/autojump.sh'
 else
-  msg-error "Could not find autojump"
+  msg-error "Could not find autojump, expected it here: 
+    $BASHRC_DIR/modules/autojump/bin/autojump.sh
+  "
 fi
 
 # autojump

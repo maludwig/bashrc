@@ -28,3 +28,6 @@ ps1_add_fn git-branch-name YELLOW '' ' '
 
 # Show the local time ISO-8601 timestamp in cyan
 ps1_add_fn date-8601-local CYAN
+
+# Show the last return code
+toggle_return_code_prompt
