@@ -36,7 +36,7 @@ fi
 if [[ "$SHELL" == "/bin/sh" ]]; then
   msg-info "Setting shell to /bin/bash"
   if [[ -f /bin/bash ]]; then
-    chsh -s /bin/bash
+    sudo chsh -s /bin/bash `whoami`
   fi
 fi
 
@@ -57,10 +57,6 @@ Restart bash to experience the new world
 '
 if [[ `whoami` != "root" ]]; then
   msg-info 'You may also want to install these for the root user, like so:'
-  if uname -a | grep -q Darwin; then
-    msg-dry " sudo -H \"$SCRIPTDIR/install\""
-  else
-    msg-dry "sudo su -c \"$SCRIPTDIR/install\""
-  fi
+  msg-dry " sudo -H \"$SCRIPTDIR/install\""
 fi
 

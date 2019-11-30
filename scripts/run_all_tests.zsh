@@ -1,4 +1,4 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env -i zsh
 
 SCRIPT_DIR="${0:a:h}"
 # Record this directory for later reference

@@ -70,30 +70,6 @@ function all2unix {
   mv -f "$OUTFILEPATH" "FILEPATH"
 }
 
-alias vsci='sudo vim /splice/software/javaOutgoing/SplashCall.ini'
-
-alias cda='cd /etc/asterisk'
-alias cdh='cd /etc/httpd'
-alias cdhc='cd /etc/httpd/conf'
-alias cdhcd='cd /etc/httpd/conf.d'
-alias cdid='cd /etc/init.d'
-alias cdj='cd /splice/software/javaOutgoing'
-alias cdt='cd /splice/software/testcalls'
-alias cdr='cd /splice/local/lib/realtalk360'
-
-alias cdla='cd /var/log/asterisk'
-alias cdlh='cd /var/log/httpd'
-
-alias awk1='awk "{ print \$1 }"'
-alias awk2='awk "{ print \$2 }"'
-alias awk3='awk "{ print \$3 }"'
-alias awk4='awk "{ print \$4 }"'
-alias awk5='awk "{ print \$5 }"'
-alias awk6='awk "{ print \$6 }"'
-alias awk7='awk "{ print \$7 }"'
-alias awk8='awk "{ print \$8 }"'
-alias awk9='awk "{ print \$9 }"'
-
 function md { mkdir $1; cd $1; }
 alias ..='cd ..'
 alias ...='cd ../..'
@@ -116,9 +92,6 @@ function susub {
   fi; 
 }
 alias die='exit 123'
-
-# Log aliases
-alias tail-httpd="tail -n20 /var/log/httpd/error_log"
 
 # MySQL aliases
 alias mq="mysql -uroot -p'$RDSPASS'"
@@ -291,12 +264,21 @@ alias aglg='apt list | grep'
 alias agli='apt --installed list'
 alias aglig='apt --installed list | grep'
 alias agr='sudo apt-get -y remove'
+
 alias yumi='sudo yum -y install'
 alias yumlg='yum list | grep'
 alias yumli='yum list installed'
 alias yumlig='yum list installed | grep'
 alias yumu='sudo yum -y update'
 alias yumr='sudo yum -y remove'
+
+alias dnfi='sudo dnf -y install'
+alias dnflg='dnf list | grep'
+alias dnfli='dnf list installed'
+alias dnflig='dnf list installed | grep'
+alias dnfu='sudo dnf -y update'
+alias dnfr='sudo dnf -y remove'
+
 alias pipi='pip install'
 alias pipu='pip install --upgrade'
 alias piplg='pip search'
@@ -669,26 +651,6 @@ function testport {
   done
   return $RETURN_VALUE
 }
-
-
-function lineseps {
-  LINECOUNT="${1:-5}"
-  LINE_SEPARATOR="${2:-========================================}"
-  SEDCMD=': loop; '
-  if [ "$LINECOUNT" -ge 2 ]; then
-    for IDX in `seq 2 $LINECOUNT`; do
-      SEDCMD="${SEDCMD}n; "
-    done
-  fi
-  SEDCMD="${SEDCMD}a ${LINE_SEPARATOR}
-n; b loop"
-  if command -v gsed &> /dev/null; then
-    cat - | gsed "$SEDCMD"
-  else
-    cat - | sed "$SEDCMD"
-  fi
-}
-
 
 RAINBOW=(${CYELLOW} ${CGREEN} ${CCYAN} ${CBLUE} ${CPINK} ${CRED})
 function rainbow-sleep {
