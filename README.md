@@ -4,9 +4,82 @@
 
 This is a collection of all of my favorite customizations for bash and zsh.
 
-To install it:
+### Installation
 
 ```bash
 git clone https://github.com/maludwig/bashrc
 ./bashrc/install
+```
+
+### Customization
+
+After the bashrc extensions are loaded, the final
+step is to look at ~/profile.d/ for files that end
+in .sh, and source each file. See [50_sample.sh](profile.d/50_sample.sh) for an example.
+
+### User Experience
+
+```bash
+log-8601 "Launching example"
+
+ask "Enter your username"
+msg-info "Your username is '$ASK'"
+
+ask-password "Enter your password secretly"
+msg-dry "Your password is '$ASK'"
+
+ask-yes "Are you sure?"
+if [[ "$ASK" == "y" ]]; then
+  msg-success "You said yes"
+else
+  msg-error "You said no"
+fi
+
+ask-enter "Continue?"
+
+md /tmp/new_dir
+msg-info "You are already in: $PWD"
+
+~/profile.d
+msg-info "You don't need to 'cd' anymore"
+ll
+
+cat 50_sample.sh
+msg-info "Edit 50_sample.sh to try out extra customizations"
+
+j tm w_d
+msg-info "You jumped back to $PWD, you can only jump to places you have already been"
+
+j file.d
+msg-info "You jumped back to $PWD, you can only jump to places you have already been"
+
+msg-info "Show the first column"
+echo "FIRST LAST
+one two
+gold silver" | awk1
+
+msg-error "$(echo 'why are you yelling?' | upper)"
+msg-success "$(echo 'SILENCE IS GOLDEN' | lower)"
+
+log-8601-local "Customize your experience"
+PS1="${CGREEN}\u@\H:${CDEFAULT}${PWD} \$ "
+
+echo -e "Show the git branch name in ${CYELLOW}yellow${CDEFAULT}"
+ps1_add_fn git-branch-name YELLOW '' ' '
+
+echo -e "Show the UTC ISO-8601 timestamp in ${CGREEN}yellow${CDEFAULT}"
+ps1_add_fn date-8601 GREEN
+
+echo -e "Show the local time ISO-8601 timestamp in ${CCYAN}cyan${CDEFAULT}"
+ps1_add_fn date-8601-local CYAN
+
+echo -e "${CRED}Ra${CYELLOW}in${CGREEN}bo${CCYAN}w ${CBLUE}wa${CCYAN}it${CDEFAULT}"
+for X in {1..9}; do rainbow-sleep 0.5; done
+
+msg-info "Test TCP ports"
+testport google.com 443
+
+msg-info "Make a good SSH key"
+generate-ssh-key
+
 ```
