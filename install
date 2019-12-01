@@ -3,10 +3,10 @@
 #set -v
 set -e
 
-SCRIPTDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-if [[ -f "$SCRIPTDIR/scripts/src/10_basics.sh" ]]; then
-  source "$SCRIPTDIR/scripts/src/10_basics.sh"
-  msg-info "bashrc repo found at $SCRIPTDIR"
+BASHRC_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+if [[ -f "$BASHRC_DIR/scripts/src/10_basics.sh" ]]; then
+  source "$BASHRC_DIR/scripts/src/10_basics.sh"
+  msg-info "bashrc repo found at $BASHRC_DIR"
 else
   echo "Could not find bashrc repo"
   exit 1
@@ -14,11 +14,28 @@ fi
 
 if ! commands_exist sudo rsync git python; then
   msg-error "You must first install sudo, rsync, git, and python"
-  exit 1
+  ask-yes "Do you want me to try to install them for you?"
+  if [[ "$ASK" == "y" ]]; then
+    source "$BASHRC_DIR/scripts/src/50_pkgs.sh"
+    if ! commands_exist sudo; then
+      pkg install sudo
+    fi
+    if ! commands_exist rsync; then
+      pkg install rsync
+    fi
+    if ! commands_exist git; then
+      pkg install git
+    fi
+    if ! commands_exist python; then
+      pkg install python
+    fi
+  else
+    exit 1
+  fi
 fi
 
 msg-info "Uninstalling the software, if it is already installed..."
-"$SCRIPTDIR/uninstall"
+"$BASHRC_DIR/uninstall"
 msg-info "Cloning https://github.com/maludwig/bashrc.git into $HOME/bashrc.extensions/ ..."
 git clone https://github.com/maludwig/bashrc.git "$HOME/bashrc.extensions/"
 
@@ -57,6 +74,6 @@ Restart bash to experience the new world
 '
 if [[ `whoami` != "root" ]]; then
   msg-info 'You may also want to install these for the root user, like so:'
-  msg-dry " sudo -H \"$SCRIPTDIR/install\""
+  msg-dry " sudo -H \"$BASHRC_DIR/install\""
 fi
 

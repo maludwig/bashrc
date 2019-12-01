@@ -2,10 +2,14 @@
 
 set -e
 
-TEST_SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+DOCKER_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SCRIPTS_DIR="$(dirname "$DOCKER_DIR")"
+BASHRC_DIR="$(dirname "$SCRIPTS_DIR")"
 
-git clone https://github.com/maludwig/bashrc "$HOME/bashrc"
-"$HOME/bashrc/install"
+env -i "$SCRIPTS_DIR/run_all_tests.bash"
+env -i "$SCRIPTS_DIR/run_all_tests.zsh"
+
+"$BASHRC_DIR/install"
 if [[ -f "$HOME/bashrc.extensions/main" ]]; then
   echo "$HOME/bashrc.extensions/main exists"
 else
@@ -13,11 +17,11 @@ else
   exit 1
 fi
 
-"$HOME/bashrc.extensions/scripts/run_all_tests.bash"
-"$HOME/bashrc.extensions/scripts/run_all_tests.zsh"
+env -i "$HOME/bashrc.extensions/scripts/run_all_tests.bash"
+env -i "$HOME/bashrc.extensions/scripts/run_all_tests.zsh"
 
 if [[ `whoami` != "root" ]]; then
-  sudo -H "$TEST_SCRIPT_DIR/test_script.sh"
+  sudo -H "$DOCKER_DIR/test_script.sh"
   echo "Successful"
 fi
 
