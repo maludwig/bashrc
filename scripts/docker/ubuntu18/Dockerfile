@@ -2,6 +2,7 @@ FROM ubuntu:18.04
 
 RUN apt-get update
 RUN apt install -y sudo python rsync git passwd zsh
+RUN apt-get upgrade
 RUN useradd -m -G sudo mitchell
 RUN sed --in-place=.bak -E 's/^%sudo.*/%sudo  ALL=(ALL)      NOPASSWD: ALL/' /etc/sudoers
 RUN chsh -s /bin/bash mitchell
