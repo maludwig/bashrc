@@ -62,7 +62,7 @@ msg-error "$(echo 'why are you yelling?' | upper)"
 msg-success "$(echo 'SILENCE IS GOLDEN' | lower)"
 
 log-8601-local "Customize your experience"
-PS1="${CGREEN}\u@\H:${CDEFAULT}${PWD} \$ "
+PS1="${CGREEN}\u@\H:${CDEFAULT}"'${PWD}\n\$ '
 
 echo -e "Show the git branch name in ${CYELLOW}yellow${CDEFAULT}"
 ps1_add_fn git-branch-name YELLOW '' ' '

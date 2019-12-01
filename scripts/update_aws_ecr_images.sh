@@ -19,6 +19,7 @@ for DISTRO in *; do
     msg-info "Building $DISTRO..."
     docker build -t bashrc_$DISTRO:latest -f "$DISTRO/Dockerfile" .
     docker tag bashrc_$DISTRO:latest ${ECR_URL}/bashrc_$DISTRO:latest
-    msg-info docker push ${ECR_URL}/bashrc_$DISTRO:latest
+    docker push ${ECR_URL}/bashrc_$DISTRO:latest
+    ask-enter
   fi
 done

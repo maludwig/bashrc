@@ -15,6 +15,26 @@ function cleanup {
 }
 trap cleanup EXIT
 
+
+function assert-path {
+  if [ -d "$1" ]; then
+    if ! echo ":${PATH}:" | grep -q ":${1}:"; then PATH="$PATH:$1" ; fi
+  fi
+  export PATH
+}
+
+assert-path "${HOME}/bin"
+assert-path "/bin"
+assert-path "/usr/bin"
+assert-path "/usr/local/bin"
+
+assert-path "/sbin"
+assert-path "/usr/sbin"
+assert-path "/usr/local/sbin"
+assert-path "/opt/python2.7/bin"
+
+assert-path "$BASHRC_DIR/bin"
+
 if [ -n "$BASH_VERSION" ]; then
   SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 elif [ -n "$ZSH_VERSION" ]; then
