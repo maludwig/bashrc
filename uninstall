@@ -26,6 +26,7 @@ clean_source_line /etc/bashrc
 clean_source_line /etc/bash.bashrc
 clean_source_line /root/.bashrc
 clean_source_line /private/var/root/.bashrc
+clean_source_line "$HOME/.zshrc"
 clean_source_line "$HOME/.bashrc"
 clean_source_line "$HOME/.bash_profile"
 

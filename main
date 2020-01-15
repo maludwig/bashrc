@@ -1,9 +1,13 @@
 #!/bin/bash
 
 if [[ "$BASHRC_LOADED" != "yes" ]]; then
-  # Record this directory for later reference
-  export BASHRC_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+  # Record this directory for later reference
+  if [ -n "$BASH_VERSION" ]; then
+    export BASHRC_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+  elif [ -n "$ZSH_VERSION" ]; then
+    export BASHRC_DIR="$( cd "$( dirname "$0" )" && pwd )"
+  fi
   load_all_scripts_in_dir () {
     local SCRIPT_D_DIR
     local SCRIPT_D_SCRIPT
@@ -52,7 +56,12 @@ if [[ "$BASHRC_LOADED" != "yes" ]]; then
     . $BASHRC_DIR/aliases
   fi
   # Default variables
-  HOST_ALIAS='\H'
+  
+  if [ -n "$BASH_VERSION" ]; then
+    HOST_ALIAS='\H'
+  elif [ -n "$ZSH_VERSION" ]; then
+    HOST_ALIAS="%m"
+  fi
   if [[ "$USER" == "" ]]; then
     USER="${USERNAME}"
   fi

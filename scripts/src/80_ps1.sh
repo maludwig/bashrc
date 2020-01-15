@@ -1,5 +1,11 @@
 # Requires substitute
 #    CLEAN_SED_STRING="$(echo "$INNER_STRING" | sed 's:[]\[^$.*/]:\\&:g')"
+
+
+if [ -n "$ZSH_VERSION" ]; then
+  setopt PROMPT_SUBST
+fi
+
 function toggle_string_in_var {
   INNER_STRING="$1"
   VARIABLE_NAME="$2"
@@ -29,20 +35,28 @@ function toggle_in_prompt_command {
 
 # NOTE: Put functions in here that produce output on stdout, if they cannot run in a subshell
 #   then you should use assert_in_prompt_command
+
+
 function ps1_add_fn {
-    local FN_NAME="$1"
-    local COLOR_NAME="${2:-DEFAULT}"
-    local PREFIX='['
-    local SUFFIX='] '
-    if [[ $# > 2 ]]; then
-        PREFIX="$3"
-        if [[ $# > 3 ]]; then
-            SUFFIX="$4"
-        fi
+  local FN_NAME="$1"
+  local COLOR_NAME="${2:-DEFAULT}"
+  local PREFIX='['
+  local SUFFIX='] '
+  if [[ $# > 2 ]]; then
+    PREFIX="$3"
+    if [[ $# > 3 ]]; then
+      SUFFIX="$4"
     fi
-    # echo "Adding $FN_NAME to PS1 with color: $COLOR_NAME"
-    NEW_PROMPT='$(echo -ne "\001${C'"${COLOR_NAME}"'}\002'"${PREFIX}"'$('$FN_NAME')'"${SUFFIX}"'${PDEFAULT}")'
-    PS1="$NEW_PROMPT""$PS1"
+  fi
+  # echo "Adding $FN_NAME to PS1 with color: $COLOR_NAME"
+  NEW_PROMPT='$(echo -ne "\001${C'"${COLOR_NAME}"'}\002'"${PREFIX}"'$('$FN_NAME')'"${SUFFIX}"'${PDEFAULT}")'
+  PS1="$NEW_PROMPT""$PS1"
+}
+zsh_ps1_fn () {
+  local FN_NAME="$1"
+  local COLOR_NAME="$2"
+  local PREFIX="$3"
+  local SUFFIX="$4"
 }
 
 function ps1_toggle_fn {
@@ -105,5 +119,6 @@ function toggle_return_code_prompt {
   else
     PROMPT_COMMAND="$(echo "$PROMPT_COMMAND" | substitute "_last_ret_code;" "")"
   fi
+  PROMPT_COMMAND="$(echo "$PROMPT_COMMAND" | substitute ";;" ";")"
   ps1_toggle_fn 'echo -ne "${LASTRETCODEMSG}"' GREEN '' ''
 }
