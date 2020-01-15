@@ -39,7 +39,7 @@ msg-info "Uninstalling the software, if it is already installed..."
 msg-info "Cloning https://github.com/maludwig/bashrc.git into $HOME/bashrc.extensions/ ..."
 git clone https://github.com/maludwig/bashrc.git "$HOME/bashrc.extensions/"
 
-if [[ -f "$HOME/.zshrc" ]]; then
+if [[ -f "$HOME/.zshrc" ]] || commands_exist zsh; then
   msg-info "Adding source line to $HOME/.zshrc"
   echo -e "\nsource \"$HOME/bashrc.extensions/main\"\n" >> "$HOME/.zshrc"
 fi
