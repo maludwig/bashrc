@@ -588,7 +588,7 @@ sort_inplace () {
   THEFILE="$1";
   shift;
   mv "$THEFILE" "$THEFILE.unsorted";
-  cat "$THEFILE" | sort "$@" > "$THEFILE";
+  cat "$THEFILE.unsorted" | sort "$@" > "$THEFILE";
 }
 
 lineseps () {
