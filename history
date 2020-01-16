@@ -5,4 +5,11 @@ if [ -n "$BASH_VERSION" ]; then
   export HISTTIMEFORMAT='%F %T '
   export HISTFILE="$HOME/.full_bash_history"
   assert_in_prompt_command 'history -a'
+elif [ -n "$ZSH_VERSION" ]; then
+  export HISTSIZE=1000000
+  export HISTFILE="$HOME/.full_zsh_history"
+  export SAVEHIST=$HISTSIZE
+  setopt HIST_IGNORE_SPACE
+  setopt INC_APPEND_HISTORY
+  setopt EXTENDED_HISTORY
 fi
