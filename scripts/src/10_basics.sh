@@ -42,6 +42,16 @@ elif [ -n "$ZSH_VERSION" ]; then
   CCYAN="$fg[cyan]"
   CWHITE="$fg[white]"
   CDEFAULT="$reset_color"
+
+  PBLACK="$CBLACK"
+  PRED="$CRED"
+  PGREEN="$CGREEN"
+  PYELLOW="$CYELLOW"
+  PBLUE="$CBLUE"
+  PPINK="$CPINK"
+  PCYAN="$CCYAN"
+  PWHITE="$CWHITE"
+  PDEFAULT="$CDEFAULT"
 fi
 
 if [[ "$USER" = "root" ]]; then

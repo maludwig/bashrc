@@ -1,6 +1,38 @@
 
 set -e
 
+help_msg () {
+  echo "
+    common.sh
+      Test shell functions
+    Usage:
+      # Normal tests
+      ./common.sh
+
+      # Include manual QA steps
+      ./common.sh --qa
+  "
+}
+
+PERFORMING_MANUAL_QA="no"
+while (( $# > 0 )); do
+  case "$1" in
+  --qa)
+    PERFORMING_MANUAL_QA="yes"
+  ;;
+  -h|--help)
+    help_msg
+    exit
+  ;;
+  *)
+    msg-error "Unknown argument: $1"
+    help_msg
+    exit 1
+  ;;
+  esac
+  shift
+done
+
 function cleanup {
   LAST_RETURN_CODE="$?"
   if [[ "$LAST_RETURN_CODE" == 0 ]]; then
@@ -44,9 +76,6 @@ else
   exit 1
 fi
 
-PERFORMING_MANUAL_QA="yes"
-PERFORMING_MANUAL_QA="no"
-
 OLDIFS="$IFS"
 IFS=$'\n'
 ALL_SOURCE_FILES=($(find "$SCRIPT_DIR/src" -type f -name '*.sh' | LC_COLLATE=C sort))
@@ -60,26 +89,33 @@ for SOURCE_FILE in "${ALL_SOURCE_FILES[@]}"; do
   source "$SOURCE_FILE"
 done
 
-for TEST_FILE in "${ALL_TEST_FILES[@]}"; do
+run_tests_in_file () {
+  TEST_FILE="$1"
+
   set -e
   TESTS=()
-  echo "Loading test: $TEST_FILE"
+  msg-info "### Loading test file: $TEST_FILE ###"
   source "$TEST_FILE"
   for TEST in "${TESTS[@]}"; do
-    msg-info "Running: $TEST"
+    msg-info "  - Running: $TEST"
     if "$TEST"; then
-      msg-success "Success: $TEST"
+      msg-success "  - Success: $TEST"
     else
-      msg-error "Failure: $TEST ($?)"
+      msg-success "  - Failure: $TEST ($?)"
       exit 1
     fi
   done
-done
+}
 
+for TEST_FILE in "${ALL_TEST_FILES[@]}"; do
+  run_tests_in_file "$TEST_FILE"
+done
+msg-dry "You are HERE"
 if [[ "$PERFORMING_MANUAL_QA" == "yes" ]]; then
+  msg-info "Running manual QA files:"
   for QA_FILE in "${ALL_QA_FILES[@]}"; do
-    set -e
-    echo "Loading manual QA file: $QA_FILE"
-    source "$QA_FILE"
+    run_tests_in_file "$QA_FILE"
   done
+else
+  msg-info "Skipping manual QA files"
 fi

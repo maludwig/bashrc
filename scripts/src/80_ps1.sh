@@ -49,7 +49,7 @@ function ps1_add_fn {
     fi
   fi
   # echo "Adding $FN_NAME to PS1 with color: $COLOR_NAME"
-  NEW_PROMPT='$(echo -ne "\001${C'"${COLOR_NAME}"'}\002'"${PREFIX}"'$('$FN_NAME')'"${SUFFIX}"'${PDEFAULT}")'
+  NEW_PROMPT='$(echo -ne "${P'"${COLOR_NAME}"'}'"${PREFIX}"'$('$FN_NAME')'"${SUFFIX}"'${PDEFAULT}")'
   PS1="$NEW_PROMPT""$PS1"
 }
 zsh_ps1_fn () {
@@ -70,7 +70,7 @@ function ps1_toggle_fn {
             SUFFIX="$4"
         fi
     fi
-    NEW_PROMPT='$(echo -ne "\001${C'"${COLOR_NAME}"'}\002'"${PREFIX}"'$('$FN_NAME')'"${SUFFIX}"'${PDEFAULT}")'
+    NEW_PROMPT='$(echo -ne "${P'"${COLOR_NAME}"'}'"${PREFIX}"'$('$FN_NAME')'"${SUFFIX}"'${PDEFAULT}")'
     if ! echo "$PS1" | grep -q -F "$NEW_PROMPT"; then
       PS1="$NEW_PROMPT""$PS1"
     else
@@ -104,9 +104,9 @@ function _last_ret_code {
   LASTRETCODE=$?
   if [[ "$PROMPT_COMMAND" == "_last_ret_code;"* ]]; then
     if [[ $LASTRETCODE == 0 ]]; then
-      LASTRETCODEMSG="\001${CGREEN}\002[✔]\001${CDEFAULT}\002 "
+      LASTRETCODEMSG="${PGREEN}[✔]${PDEFAULT} "
     else
-      LASTRETCODEMSG="\001${CRED}\002[X]($LASTRETCODE)\001${CDEFAULT}\002 "
+      LASTRETCODEMSG="${PRED}[X]($LASTRETCODE)${PDEFAULT} "
     fi
   else
     PROMPT_COMMAND="_last_ret_code;$(echo "$PROMPT_COMMAND" | substitute "_last_ret_code;" "")"

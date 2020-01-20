@@ -23,4 +23,5 @@ _colors_test () {
   echo -e "${CDEFAULT}This is the default${CDEFAULT}"
   ask-yes "Are these the right colors?" && [[ "$ASK" == "y" ]]
 }
-_colors_test
+
+TESTS=(_colors_test)
