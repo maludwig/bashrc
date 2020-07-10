@@ -3,21 +3,6 @@
 #set -v
 set -e
 
-
-get_os_type () {
-    UNAME_S="$(uname -s)"
-    case "${UNAME_S}" in
-        Linux*)     echo Linux;;
-        Darwin*)    echo Mac;;
-        CYGWIN*)    echo Windows;;
-        MINGW*)     echo Windows;;
-        *)          echo "UNKNOWN:${unameOut}"
-    esac
-}
-
-OS_TYPE=`get_os_type`
-
-
 if [ -n "$BASH_VERSION" ]; then
   SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 elif [ -n "$ZSH_VERSION" ]; then
@@ -37,6 +22,8 @@ else
   echo "Could not find bashrc repo"
   exit 1
 fi
+
+OS_TYPE=`get_os_type`
 
 REQUIRED_PACKAGES="rsync git python"
 if [[ "$OS_TYPE" == "Linux" ]] || [[ "$OS_TYPE" == "Mac" ]]; then

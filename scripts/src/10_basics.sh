@@ -107,3 +107,14 @@ commands_exist () {
     fi
   done
 }
+
+get_os_type () {
+    UNAME_S="$(uname -s)"
+    case "${UNAME_S}" in
+        Linux*)     echo Linux;;
+        Darwin*)    echo Mac;;
+        CYGWIN*)    echo Windows;;
+        MINGW*)     echo Windows;;
+        *)          echo "UNKNOWN:${unameOut}"
+    esac
+}
