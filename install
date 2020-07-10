@@ -3,6 +3,32 @@
 #set -v
 set -e
 
+
+get_os_type () {
+    UNAME_S="$(uname -s)"
+    case "${UNAME_S}" in
+        Linux*)     echo Linux;;
+        Darwin*)    echo Mac;;
+        CYGWIN*)    echo Windows;;
+        MINGW*)     echo Windows;;
+        *)          echo "UNKNOWN:${unameOut}"
+    esac
+}
+
+OS_TYPE=`get_os_type`
+
+
+if [ -n "$BASH_VERSION" ]; then
+  SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+elif [ -n "$ZSH_VERSION" ]; then
+  SCRIPT_DIR="${0:a:h}"
+else
+  echo "Unknown shell"
+  exit 1
+fi
+
+BASHRC_DIR="$SCRIPT_DIR"
+
 BASHRC_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 if [[ -f "$BASHRC_DIR/scripts/src/10_basics.sh" ]]; then
   source "$BASHRC_DIR/scripts/src/10_basics.sh"
@@ -12,23 +38,27 @@ else
   exit 1
 fi
 
-if ! commands_exist sudo rsync git python; then
-  msg-error "You must first install sudo, rsync, git, and python"
+REQUIRED_PACKAGES="rsync git python"
+if [[ "$OS_TYPE" == "Linux" ]] || [[ "$OS_TYPE" == "Mac" ]]; then
+  REQUIRED_PACKAGES="$REQUIRED_PACKAGES sudo"
+fi
+
+MISSING_PACKAGES=""
+for REQUIRED_PACKAGE in $REQUIRED_PACKAGES; do
+  if ! commands_exist "$REQUIRED_PACKAGE"; then
+    MISSING_PACKAGES="$MISSING_PACKAGES $REQUIRED_PACKAGE"
+  fi
+done
+if [[ "$MISSING_PACKAGES" != "" ]]; then
+  msg-error "You must first install: $MISSING_PACKAGES"
   ask-yes "Do you want me to try to install them for you?"
   if [[ "$ASK" == "y" ]]; then
     source "$BASHRC_DIR/scripts/src/50_pkgs.sh"
-    if ! commands_exist sudo; then
-      pkg install sudo
-    fi
-    if ! commands_exist rsync; then
-      pkg install rsync
-    fi
-    if ! commands_exist git; then
-      pkg install git
-    fi
-    if ! commands_exist python; then
-      pkg install python
-    fi
+    for REQUIRED_PACKAGE in $REQUIRED_PACKAGES; do
+      if ! commands_exist "$REQUIRED_PACKAGE"; then
+        pkg install "$REQUIRED_PACKAGE"
+      fi
+    done
   else
     exit 1
   fi
@@ -54,10 +84,13 @@ if ! [[ -d "$HOME/profile.d" ]]; then
   msg-info "Copying sample to $HOME/profile.d"
   rsync -av "$HOME/bashrc.extensions/profile.d/" "$HOME/profile.d/"
 fi
-if [[ "$SHELL" == "/bin/sh" ]]; then
-  msg-info "Setting shell to /bin/bash"
-  if [[ -f /bin/bash ]]; then
-    sudo chsh -s /bin/bash `whoami`
+
+if [[ "$OS_TYPE" == "Linux" ]] || [[ "$OS_TYPE" == "Mac" ]]; then
+  if [[ "$SHELL" == "/bin/sh" ]]; then
+    msg-info "Setting shell to /bin/bash"
+    if [[ -f /bin/bash ]]; then
+      sudo chsh -s /bin/bash `whoami`
+    fi
   fi
 fi
 
@@ -76,8 +109,10 @@ The maludwig/bashrc extensions were installed to: $HOME/bashrc.extensions
 
 Restart bash to experience the new world
 '
-if [[ `whoami` != "root" ]]; then
-  msg-info 'You may also want to install these for the root user, like so:'
-  msg-dry " sudo -H \"$BASHRC_DIR/install\""
+if [[ "$OS_TYPE" == "Linux" ]] || [[ "$OS_TYPE" == "Mac" ]]; then
+  if [[ `whoami` != "root" ]]; then
+    msg-info 'You may also want to install these for the root user, like so:'
+    msg-dry " sudo -H \"$BASHRC_DIR/install\""
+  fi
 fi
 
