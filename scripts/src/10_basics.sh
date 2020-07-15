@@ -42,6 +42,16 @@ elif [ -n "$ZSH_VERSION" ]; then
   CCYAN="$fg[cyan]"
   CWHITE="$fg[white]"
   CDEFAULT="$reset_color"
+
+  PBLACK="$CBLACK"
+  PRED="$CRED"
+  PGREEN="$CGREEN"
+  PYELLOW="$CYELLOW"
+  PBLUE="$CBLUE"
+  PPINK="$CPINK"
+  PCYAN="$CCYAN"
+  PWHITE="$CWHITE"
+  PDEFAULT="$CDEFAULT"
 fi
 
 if [[ "$USER" = "root" ]]; then
@@ -96,4 +106,15 @@ commands_exist () {
       shift
     fi
   done
+}
+
+get_os_type () {
+    UNAME_S="$(uname -s)"
+    case "${UNAME_S}" in
+        Linux*)     echo Linux;;
+        Darwin*)    echo Mac;;
+        CYGWIN*)    echo Windows;;
+        MINGW*)     echo Windows;;
+        *)          echo "UNKNOWN:${unameOut}"
+    esac
 }

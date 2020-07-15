@@ -69,6 +69,13 @@ pipli () { pip freeze "$@"; }
 piplig () { pip freeze | grep "$@"; }
 pipr () { pip uninstall "$@"; }
 
+scoopi () { scoop install "$@"; }
+scoopu () { pip install --upgrade "$@"; }
+scooplg () { scoop search "$@"; }
+scoopli () { scoop list "$@"; }
+scooplig () { scoop list | grep "$@"; }
+scoopr () { scoop uninstall "$@"; }
+
 function yuminode {
   NODEVERSION="$1"
   if [[ "$NODEVERSION" == "" ]]; then
@@ -113,6 +120,8 @@ pkg () {
     PKGMGR="apt"
   elif commands_exist brew; then
     PKGMGR="br"
+  elif commands_exist scoop; then
+    PKGMGR="scoop"
   else
     msg-error "Could not find supported package manager"
     return 2

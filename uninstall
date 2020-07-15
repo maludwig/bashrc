@@ -1,6 +1,25 @@
 #!/bin/bash
 set -e
 
+if [ -n "$BASH_VERSION" ]; then
+  SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+elif [ -n "$ZSH_VERSION" ]; then
+  SCRIPT_DIR="${0:a:h}"
+else
+  echo "Unknown shell"
+  exit 1
+fi
+
+BASHRC_DIR="$SCRIPT_DIR"
+
+BASHRC_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+if [[ -f "$BASHRC_DIR/scripts/src/10_basics.sh" ]]; then
+  source "$BASHRC_DIR/scripts/src/10_basics.sh"
+else
+  echo "Could not find bashrc repo"
+  exit 1
+fi
+
 function get_file_owner {
   ls -ld "$1" | awk 'NR==1 {print $3}'
 }
@@ -17,26 +36,44 @@ function clean_source_line {
   fi
 }
 
-if ! sudo echo " "; then
-  echo "You must be able to become root to uninstall this software"
-  exit 1
+if [[ "$OS_TYPE" == "Linux" ]] || [[ "$OS_TYPE" == "Mac" ]]; then
+  if ! sudo echo " "; then
+    echo "You must be able to become root to uninstall this software"
+    exit 1
+  fi
 fi
 
-clean_source_line /etc/bashrc
-clean_source_line /etc/bash.bashrc
-clean_source_line /root/.bashrc
-clean_source_line /private/var/root/.bashrc
+OS_TYPE=`get_os_type`
+
+if [[ "$OS_TYPE" == "Linux" ]] || [[ "$OS_TYPE" == "Mac" ]]; then
+  clean_source_line /etc/bashrc
+  clean_source_line /etc/bash.bashrc
+  clean_source_line /root/.bashrc
+  if [[ "$OS_TYPE" == "Mac" ]]; then
+    clean_source_line /private/var/root/.bashrc
+  fi
+fi
 clean_source_line "$HOME/.zshrc"
 clean_source_line "$HOME/.bashrc"
 clean_source_line "$HOME/.bash_profile"
 
+
 if [[ -d /etc/bashrc.extensions ]]; then
-  sudo rm -rf /etc/bashrc.extensions
+  if [[ "$OS_TYPE" == "Linux" ]] || [[ "$OS_TYPE" == "Mac" ]]; then
+    sudo rm -rf /etc/bashrc.extensions
+  else
+    rm -rf /etc/bashrc.extensions
+  fi
 fi
 if [[ -d "$HOME/bashrc.extensions" ]]; then
   rm -rf "$HOME/bashrc.extensions"
 fi
 if [[ -f /etc/profile.d/bashrc.extensions.sh ]]; then
-  sudo rm -f /etc/profile.d/bashrc.extensions.sh
+
+  if [[ "$OS_TYPE" == "Linux" ]] || [[ "$OS_TYPE" == "Mac" ]]; then
+    sudo rm -rf /etc/profile.d/bashrc.extensions.sh
+  else
+    rm -rf /etc/profile.d/bashrc.extensions.sh
+  fi
 fi
 echo "bashrc extensions uninstalled successfully"
