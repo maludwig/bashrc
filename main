@@ -2,6 +2,16 @@
 
 if [[ "$BASHRC_LOADED" != "yes" ]]; then
 
+  if command -v gdate &> /dev/null; then
+    function unix_nanos {
+      gdate +%s.%N
+    }
+  else 
+    function unix_nanos {
+      date +%s.%N
+    }
+  fi
+
   # Record this directory for later reference
   if [ -n "$BASH_VERSION" ]; then
     export BASHRC_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -9,10 +19,12 @@ if [[ "$BASHRC_LOADED" != "yes" ]]; then
     export BASHRC_DIR="$( cd "$( dirname "$0" )" && pwd )"
     setopt SH_WORD_SPLIT
   fi
+
   load_all_scripts_in_dir () {
     local SCRIPT_D_DIR
     local SCRIPT_D_SCRIPT
     local SCRIPT_BASE_SORT=""
+    TOTAL_SOURCE_START=`unix_nanos`
     for SCRIPT_D_DIR in "$@"; do
       if [[ -d "$SCRIPT_D_DIR" ]]; then
         # Apply additional profile scripts if they exist
@@ -28,30 +40,41 @@ if [[ "$BASHRC_LOADED" != "yes" ]]; then
     # echo "Sorted scripts:"
     # echo "$SCRIPT_BASE_SORT"
     for SCRIPT_D_SCRIPT in `echo "$SCRIPT_BASE_SORT" | cut -d: -f2`; do
-      if which gdate &> /dev/null; then
-        UNIX_START_TIME=`gdate +%s.%N`
-      else
-        UNIX_START_TIME=`date +%s.%N`
+      if [[ "$MEASURE_SCRIPT_LOAD_TIME" == "yes" ]]; then
+        UNIX_START_TIME=`unix_nanos`
+        echo "Sourcing: $SCRIPT_D_SCRIPT"
       fi
-      # echo "Sourcing: $SCRIPT_D_SCRIPT"
       source "$SCRIPT_D_SCRIPT"
-      # echo "Done: $SCRIPT_D_SCRIPT"
-      if which gdate &> /dev/null; then
-        UNIX_END_TIME=`gdate +%s.%N`
-      else
-        UNIX_END_TIME=`date +%s.%N`
-      fi
-      SLOW_TO_SOURCE=`echo $UNIX_END_TIME $UNIX_START_TIME | awk '{print ((($1-$2)) > 0.2)}'`
-      TOTAL_TIME_IN_MS=`echo $UNIX_END_TIME $UNIX_START_TIME | awk '{ printf("%0.2f",$1-$2) }'`
-      if [ -z "$SUPPRESS_SLOW_SOURCE_WARNING" ]; then
-        if [[ "$SLOW_TO_SOURCE" == "1" ]]; then
-          msg-error "It took ${TOTAL_TIME_IN_MS}s to load $SCRIPT_D_SCRIPT"
+      if [[ "$MEASURE_SCRIPT_LOAD_TIME" == "yes" ]]; then
+        echo "Done: $SCRIPT_D_SCRIPT"
+        UNIX_END_TIME=`unix_nanos`
+        SLOW_TO_SOURCE=`echo $UNIX_END_TIME $UNIX_START_TIME | awk '{print ((($1-$2)) > 0.2)}'`
+        TOTAL_TIME_IN_MS=`echo $UNIX_END_TIME $UNIX_START_TIME | awk '{ printf("%0.2f",$1-$2) }'`
+        if [ -z "$SUPPRESS_SLOW_SOURCE_WARNING" ]; then
+          if [[ "$SLOW_TO_SOURCE" == "1" ]]; then
+            msg-error "It took ${TOTAL_TIME_IN_MS}s to load $SCRIPT_D_SCRIPT"
+          else
+            msg-info "It took ${TOTAL_TIME_IN_MS}s to load $SCRIPT_D_SCRIPT"
+          fi
         fi
       fi
-      done
+    done
+    TOTAL_SOURCE_END=`unix_nanos`
+    SLOW_TO_SOURCE=`echo $TOTAL_SOURCE_END $TOTAL_SOURCE_START | awk '{print ((($1-$2)) > 2)}'`
+    TOTAL_TIME_IN_MS=`echo $TOTAL_SOURCE_END $TOTAL_SOURCE_START | awk '{ printf("%0.2f",$1-$2) }'`
+    if [ -z "$SUPPRESS_SLOW_SOURCE_WARNING" ]; then
+      if [[ "$SLOW_TO_SOURCE" == "1" ]]; then
+        msg-error "
+          It took ${TOTAL_TIME_IN_MS}s to load all scripts in these directories: $@
+          If you want to find the scripts that are slow, add the following to the top of your ~/.bashrc or ~/.zshrc or ~/.bash_profile file:
+            MEASURE_SCRIPT_LOAD_TIME=yes
+          To suppress this message, add this line instead:
+            SUPPRESS_SLOW_SOURCE_WARNING=yes
+        "
+      fi
+    fi
   }
   load_all_scripts_in_dir "$BASHRC_DIR/scripts/src"
-
   # Bash aliases
   if [ -f $BASHRC_DIR/aliases ]; then
     . $BASHRC_DIR/aliases

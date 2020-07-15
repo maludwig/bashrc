@@ -26,6 +26,7 @@ _autojump_test () {
       return 4
     fi
   fi
+  AUTOJUMP_DB=`autojump -s | grep -E '^data:' | sed -E $'s/^data:[\t ]+//'`
   if ! (cat "$AUTOJUMP_DB" | grep -q /tmp/autojump_test); then
     msg-error "
       Could not find '/tmp/autojump_test' in '$AUTOJUMP_DB'

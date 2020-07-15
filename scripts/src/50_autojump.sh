@@ -12,7 +12,6 @@ fi
 # autojump
 if [[ -f "$AUTOJUMP_SH" ]]; then
   source "$AUTOJUMP_SH"
-  export AUTOJUMP_DB=`autojump -s | grep -E '^data:' | sed -E $'s/^data:[\t ]+//'`
 fi
 if [[ "$BASH_VERSION" > "4" ]]; then
   shopt -s autocd
