@@ -123,15 +123,21 @@ alias dm-mig='dm makemigrations; dm migrate'
 
 
 # Git aliases
+function is_git_repo {
+  ( 
+    while [[ "$PWD" != "/" ]]; do 
+      if [[ -d ".git" ]]; then
+        return
+      fi
+      cd ..
+    done
+    return 1
+  )
+}
 
 function git-branch-name {
-  if git rev-parse &> /dev/null; then
-    BRANCH_NAME=`git rev-parse --abbrev-ref HEAD 2>/dev/null`
-    BRANCH_HASH=`git rev-parse --short HEAD 2>/dev/null`
-    if [ -z "$BRANCH_HASH" ]; then
-      BRANCH_HASH="<new>"
-    fi
-    echo -n "$BRANCH_NAME:$BRANCH_HASH"
+  if is_git_repo; then
+    git log --pretty='%C(yellow)%h %C(auto)%d' --max-count 1 --color=always 2> /dev/null || echo '<new>'
   fi
 }
 

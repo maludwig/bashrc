@@ -118,3 +118,14 @@ get_os_type () {
         *)          echo "UNKNOWN:${unameOut}"
     esac
 }
+
+contains () {
+  if [ "$2" != 'in' ]; then
+    msg-error "
+    Usage:
+      contains {key} in {array}
+    "
+    return 1
+  fi
+  eval '[ ${'$3'[$1]+true} ]'
+}

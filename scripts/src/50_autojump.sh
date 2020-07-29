@@ -16,3 +16,10 @@ fi
 if [[ "$BASH_VERSION" > "4" ]]; then
   shopt -s autocd
 fi
+
+find_autojump_db () {
+  AUTOJUMP_DB=`autojump -s | grep -E '^data:' | sed -E $'s/^data:[\t ]+//'`
+  if echo "$AUTOJUMP_DB" | grep -Fq 'C:'; then
+    echo "$AUTOJUMP_DB" | sed -E 's%\\%/%g;s%C:/%/c/%'
+  fi
+}

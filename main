@@ -45,6 +45,7 @@ if [[ "$BASHRC_LOADED" != "yes" ]]; then
         echo "Sourcing: $SCRIPT_D_SCRIPT"
       fi
       source "$SCRIPT_D_SCRIPT"
+      
       if [[ "$MEASURE_SCRIPT_LOAD_TIME" == "yes" ]]; then
         echo "Done: $SCRIPT_D_SCRIPT"
         UNIX_END_TIME=`unix_nanos`
@@ -73,8 +74,11 @@ if [[ "$BASHRC_LOADED" != "yes" ]]; then
         "
       fi
     fi
+    
   }
   load_all_scripts_in_dir "$BASHRC_DIR/scripts/src"
+  
+
   # Bash aliases
   if [ -f $BASHRC_DIR/aliases ]; then
     . $BASHRC_DIR/aliases
@@ -124,10 +128,10 @@ if [[ "$BASHRC_LOADED" != "yes" ]]; then
   fi
 
   if [ -n "$BASH_VERSION" ]; then
-    PS1="\[${CUSER}\]\u@\[${CYELLOW}\]${HOST_ALIAS}:\[${CGREEN}\]\w\[${CDEFAULT}\] \n\$ "
+    PS1='$(ps1_msg)'"\[${CUSER}\]\u@\[${CYELLOW}\]${HOST_ALIAS}:\[${CGREEN}\]\w\[${CDEFAULT}\] "$'\n$ '
   elif [ -n "$ZSH_VERSION" ]; then
     precmd() { eval "$PROMPT_COMMAND"; }
-    PS1="${CUSER}%n@${CYELLOW}${HOST_ALIAS}:${CGREEN}%~${CDEFAULT}"$'\n$ '
+    PS1='$(ps1_msg)'"${CUSER}%n@${CYELLOW}${HOST_ALIAS}:${CGREEN}%~${CDEFAULT}"$'\n$ '
     # PS1="%{$fg[red]%}%n%{$reset_color%}@%{$fg[blue]%}%m %{$fg[yellow]%}%~ %{$reset_color%}%% "
   fi
   assert_in_prompt_command 'add_to_backlist'

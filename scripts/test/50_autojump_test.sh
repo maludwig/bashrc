@@ -9,8 +9,15 @@ _autojump_test () {
     "
     return 2
   fi
-  mkdir -p /tmp/autojump_test/asdf/fdsa/b/qqq
-  cd /tmp/autojump_test/
+  OS_TYPE=`get_os_type`
+  if [[ "$OS_TYPE" == "Windows" ]]; then
+    TEMP_DIR_ROOT="$HOME/AppData/Local/Temp"
+  else
+    TEMP_DIR_ROOT="/tmp"
+  fi
+
+  mkdir -p "$TEMP_DIR_ROOT/autojump_test/asdf/fdsa/b/qqq"
+  cd "$TEMP_DIR_ROOT/autojump_test"
   if commands_exist autojump_add_to_database; then
     if autojump_add_to_database; then
       sleep 0.5
@@ -26,7 +33,6 @@ _autojump_test () {
       return 4
     fi
   fi
-  AUTOJUMP_DB=`autojump -s | grep -E '^data:' | sed -E $'s/^data:[\t ]+//'`
   if ! (cat "$AUTOJUMP_DB" | grep -q /tmp/autojump_test); then
     msg-error "
       Could not find '/tmp/autojump_test' in '$AUTOJUMP_DB'

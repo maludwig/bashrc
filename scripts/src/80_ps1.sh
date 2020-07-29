@@ -36,22 +36,60 @@ function toggle_in_prompt_command {
 # NOTE: Put functions in here that produce output on stdout, if they cannot run in a subshell
 #   then you should use assert_in_prompt_command
 
+declare -g -a PS1_COMMANDS
+declare -g -A PS1_COLORS
+declare -g -A PS1_PREFIXES
+declare -g -A PS1_SUFFIXES
+# declare -p PS1_COLORS PS1_PREFIXES PS1_SUFFIXES PS1_COMMANDS
+function ps1_msg {
+  local PS1_COMMAND
+  local COLOR
+  local PREFIX
+  local SUFFIX
+  local PS1_CONTENT=""
+  for PS1_COMMAND in "${PS1_COMMANDS[@]}"; do
+    COLOR="${PS1_COLORS[$PS1_COMMAND]}"
+    PREFIX="${PS1_PREFIXES[$PS1_COMMAND]}"
+    SUFFIX="${PS1_SUFFIXES[$PS1_COMMAND]}"
+    PS1_CONTENT="${PS1_CONTENT}${COLOR}${PREFIX}$($PS1_COMMAND)${SUFFIX}"
+  done
+  echo -ne "${PS1_CONTENT}${PDEFAULT}"
+}
 
 function ps1_add_fn {
   local FN_NAME="$1"
   local COLOR_NAME="${2:-DEFAULT}"
   local PREFIX='['
   local SUFFIX='] '
+  
   if [[ $# > 2 ]]; then
     PREFIX="$3"
     if [[ $# > 3 ]]; then
       SUFFIX="$4"
     fi
   fi
-  # echo "Adding $FN_NAME to PS1 with color: $COLOR_NAME"
-  NEW_PROMPT='$(echo -ne "${P'"${COLOR_NAME}"'}'"${PREFIX}"'$('$FN_NAME')'"${SUFFIX}"'${PDEFAULT}")'
-  PS1="$NEW_PROMPT""$PS1"
+  PS1_COMMANDS+=("$FN_NAME")
+  COLOR_REF=P"$COLOR_NAME"
+  PS1_COLORS["$FN_NAME"]="${!COLOR_REF}"
+  PS1_PREFIXES["$FN_NAME"]="$PREFIX"
+  PS1_SUFFIXES["$FN_NAME"]="$SUFFIX"
+  if ! [[ "$PS1" == *'$(ps1_msg)'* ]]; then
+    PS1='$(ps1_msg)$PS1'
+  fi
 }
+
+function ps1_remove_fn {
+  local FN_NAME="$1"
+  for i in "${!PS1_COMMANDS[@]}"; do
+    if [[ "${PS1_COMMANDS[i]}" == "$FN_NAME" ]]; then
+      unset 'PS1_COMMANDS[i]'
+    fi
+  done
+  unset PS1_COLORS["$FN_NAME"]
+  unset PS1_PREFIXES["$FN_NAME"]
+  unset PS1_SUFFIXES["$FN_NAME"]
+}
+
 zsh_ps1_fn () {
   local FN_NAME="$1"
   local COLOR_NAME="$2"
@@ -60,22 +98,15 @@ zsh_ps1_fn () {
 }
 
 function ps1_toggle_fn {
-    local FN_NAME="$1"
-    local COLOR_NAME="${2:-DEFAULT}"
-    local PREFIX='['
-    local SUFFIX='] '
-    if [[ $# > 2 ]]; then
-        PREFIX="$3"
-        if [[ $# > 3 ]]; then
-            SUFFIX="$4"
-        fi
-    fi
-    NEW_PROMPT='$(echo -ne "${P'"${COLOR_NAME}"'}'"${PREFIX}"'$('$FN_NAME')'"${SUFFIX}"'${PDEFAULT}")'
-    if ! echo "$PS1" | grep -q -F "$NEW_PROMPT"; then
-      PS1="$NEW_PROMPT""$PS1"
-    else
-      PS1="$(echo "$PS1" | substitute "$NEW_PROMPT" "")"
-    fi
+  local FN_NAME="$1"
+  local COLOR_NAME="$2"
+  local PREFIX="$3"
+  local SUFFIX="$4"
+  if contains "$FN_NAME" in PS1_COMMANDS; then
+    ps1_remove_fn "$FN_NAME"
+  else
+    ps1_add_fn "$FN_NAME" "$COLOR_NAME" "$PREFIX" "$SUFFIX"
+  fi
 }
 
 function _record_command_start {
@@ -113,6 +144,10 @@ function _last_ret_code {
   fi
 }
 
+function last_ret_code_msg {
+  echo -ne "${LASTRETCODEMSG}"
+}
+
 function toggle_return_code_prompt {
   if ! echo "$PROMPT_COMMAND" | grep -q -F "_last_ret_code;"; then
     PROMPT_COMMAND="_last_ret_code;$PROMPT_COMMAND"
@@ -120,5 +155,14 @@ function toggle_return_code_prompt {
     PROMPT_COMMAND="$(echo "$PROMPT_COMMAND" | substitute "_last_ret_code;" "")"
   fi
   PROMPT_COMMAND="$(echo "$PROMPT_COMMAND" | substitute ";;" ";")"
-  ps1_toggle_fn 'echo -ne "${LASTRETCODEMSG}"' GREEN '' ''
+  ps1_toggle_fn last_ret_code_msg GREEN '' ''
 }
+
+# echo "Setting PS1:
+# $PS1
+# "
+# PS1='$(ps1_msg)'"$PS1"
+# echo "$PS1"
+# echo "Done"
+
+# declare -p PS1_COLORS PS1_PREFIXES PS1_SUFFIXES PS1_COMMANDS
