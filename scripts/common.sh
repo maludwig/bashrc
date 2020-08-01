@@ -91,6 +91,7 @@ done
 
 run_tests_in_file () {
   TEST_FILE="$1"
+  SUPPRESS_OUTPUT="$2"
 
   set -e
   TESTS=()
@@ -98,23 +99,33 @@ run_tests_in_file () {
   source "$TEST_FILE"
   for TEST in "${TESTS[@]}"; do
     msg-info "  - Running: $TEST"
-    if "$TEST"; then
-      msg-success "  - Success: $TEST"
+    if [[ "$SUPPRESS_OUTPUT" == "y" ]]; then
+      if TEST_RESULT=`"$TEST" 2>&1`; then
+        msg-success "  - Success: $TEST"
+      else
+        echo "$TEST_RESULT"
+        msg-error "  - Failure: $TEST ($?)"
+        exit 1
+      fi
     else
-      msg-success "  - Failure: $TEST ($?)"
-      exit 1
+      if "$TEST"; then
+        msg-success "  - Success: $TEST"
+      else
+        msg-error "  - Failure: $TEST ($?)"
+        exit 1
+      fi
     fi
   done
 }
 
 for TEST_FILE in "${ALL_TEST_FILES[@]}"; do
-  run_tests_in_file "$TEST_FILE"
+  run_tests_in_file "$TEST_FILE" "y"
 done
 msg-dry "You are HERE"
 if [[ "$PERFORMING_MANUAL_QA" == "yes" ]]; then
   msg-info "Running manual QA files:"
   for QA_FILE in "${ALL_QA_FILES[@]}"; do
-    run_tests_in_file "$QA_FILE"
+    run_tests_in_file "$QA_FILE" "n"
   done
 else
   msg-info "Skipping manual QA files"

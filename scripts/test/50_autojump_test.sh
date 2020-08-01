@@ -16,8 +16,9 @@ _autojump_test () {
     TEMP_DIR_ROOT="/tmp"
   fi
 
-  mkdir -p "$TEMP_DIR_ROOT/autojump_test/asdf/fdsa/b/qqq"
-  cd "$TEMP_DIR_ROOT/autojump_test"
+  TEST_TEMP_DIR="$TEMP_DIR_ROOT/autojump_test_$(date +%s)/asdf/fdsa/b/qqq"
+  mkdir -p "$TEST_TEMP_DIR"
+  cd "$TEST_TEMP_DIR"
   if commands_exist autojump_add_to_database; then
     if autojump_add_to_database; then
       sleep 0.5
@@ -33,9 +34,10 @@ _autojump_test () {
       return 4
     fi
   fi
-  if ! (cat "$AUTOJUMP_DB" | grep -q /tmp/autojump_test); then
+  if ! (autojump --stat | grep -q "$TEST_TEMP_DIR"); then
+    autojump --stat
     msg-error "
-      Could not find '/tmp/autojump_test' in '$AUTOJUMP_DB'
+      Could not find '$TEST_TEMP_DIR' in 'autojump --stat' output
     "
     return 5
   fi

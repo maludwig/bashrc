@@ -5,7 +5,6 @@ function _upper_test {
     echo "Expected 'HELLO WORLD\nSECOND.LINE!', got '$ACTUAL'"
     return 1
   fi
-  echo "upper is ok"
 }
 
 function _lower_test {
@@ -14,8 +13,6 @@ function _lower_test {
     echo "Expected 'HELLO WORLD\nSECOND.LINE!', got '$ACTUAL'"
     return 1
   fi
-  echo "lower is ok"
 }
 
-_upper_test
-_lower_test
+TESTS=(_upper_test _lower_test)

@@ -16,6 +16,8 @@ _git_branch_name_test () {
   cd "$TEMP_DIR"
   [[ "$(git_branch_name)" == "" ]]
   git init
+  git config user.email "you@example.com"
+  git config user.name "Your Name"
   [[ "$(git_branch_name)" == "<new>" ]]
   git checkout master
   echo "hi" > hi.txt

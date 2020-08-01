@@ -36,10 +36,11 @@ function toggle_in_prompt_command {
 # NOTE: Put functions in here that produce output on stdout, if they cannot run in a subshell
 #   then you should use assert_in_prompt_command
 
-declare -g -a PS1_COMMANDS
-declare -g -A PS1_COLORS
-declare -g -A PS1_PREFIXES
-declare -g -A PS1_SUFFIXES
+# Use the global flag if it exists
+declare -g -a PS1_COMMANDS || declare -a PS1_COMMANDS
+declare -g -A PS1_COLORS || declare -A PS1_COLORS
+declare -g -A PS1_PREFIXES || declare -A PS1_PREFIXES
+declare -g -A PS1_SUFFIXES || declare -A PS1_SUFFIXES
 # declare -p PS1_COLORS PS1_PREFIXES PS1_SUFFIXES PS1_COMMANDS
 function ps1_msg {
   local PS1_COMMAND
@@ -48,13 +49,25 @@ function ps1_msg {
   local SUFFIX
   local PS1_CONTENT=""
   for PS1_COMMAND in "${PS1_COMMANDS[@]}"; do
-    COLOR="${PS1_COLORS[$PS1_COMMAND]}"
-    PREFIX="${PS1_PREFIXES[$PS1_COMMAND]}"
-    SUFFIX="${PS1_SUFFIXES[$PS1_COMMAND]}"
+    COLOR="${PS1_COLORS["$PS1_COMMAND"]}"
+    PREFIX="${PS1_PREFIXES["$PS1_COMMAND"]}"
+    SUFFIX="${PS1_SUFFIXES["$PS1_COMMAND"]}"
     PS1_CONTENT="${PS1_CONTENT}${COLOR}${PREFIX}$($PS1_COMMAND)${SUFFIX}"
   done
   echo -ne "${PS1_CONTENT}${PDEFAULT}"
 }
+
+if [ -n "$BASH_VERSION" ]; then
+  get_prompt_color () {
+    COLOR_REF=P"$1"
+    echo "${!COLOR_REF}"
+  }
+elif [ -n "$ZSH_VERSION" ]; then
+  get_prompt_color () {
+    COLOR_REF=P"$1"
+    echo "${(P)COLOR_REF}"
+  }
+fi
 
 function ps1_add_fn {
   local FN_NAME="$1"
@@ -69,8 +82,7 @@ function ps1_add_fn {
     fi
   fi
   PS1_COMMANDS+=("$FN_NAME")
-  COLOR_REF=P"$COLOR_NAME"
-  PS1_COLORS["$FN_NAME"]="${!COLOR_REF}"
+  PS1_COLORS["$FN_NAME"]="$(get_prompt_color "$COLOR_NAME")"
   PS1_PREFIXES["$FN_NAME"]="$PREFIX"
   PS1_SUFFIXES["$FN_NAME"]="$SUFFIX"
   if ! [[ "$PS1" == *'$(ps1_msg)'* ]]; then
@@ -80,14 +92,13 @@ function ps1_add_fn {
 
 function ps1_remove_fn {
   local FN_NAME="$1"
-  for i in "${!PS1_COMMANDS[@]}"; do
-    if [[ "${PS1_COMMANDS[i]}" == "$FN_NAME" ]]; then
-      unset 'PS1_COMMANDS[i]'
+  declare -a NEW_PS1_COMMANDS
+  for PS1_COMMAND in "${PS1_COMMANDS[@]}"; do
+    if [[ "$PS1_COMMAND" != "$FN_NAME" ]]; then
+      NEW_PS1_COMMANDS+=("$PS1_COMMAND")
     fi
   done
-  unset PS1_COLORS["$FN_NAME"]
-  unset PS1_PREFIXES["$FN_NAME"]
-  unset PS1_SUFFIXES["$FN_NAME"]
+  PS1_COMMANDS=("${NEW_PS1_COMMANDS[@]}")
 }
 
 zsh_ps1_fn () {
