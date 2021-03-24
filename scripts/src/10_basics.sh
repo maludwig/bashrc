@@ -71,8 +71,10 @@ fi
 
 function echo-err { echo "$@" 1>&2; }
 
-function date-today { echo $(date +%F); }
-function date-second { echo $(date +%F_%H-%M-%S); }
+function date-today { date -u +%F; }
+function date-today-local { date +%F; }
+function date-second { echo "$(date -u +%F_%H-%M-%S)Z"; }
+function date-second-local { date +%F_%H-%M-%S; }
 function date-8601 { date -u +%Y-%m-%dT%H:%M:%S%z; }
 function date-8601-local { date +%Y-%m-%dT%H:%M:%S%z; }
 function log-8601 { echo "[ $(date-8601) ] $@"; }
@@ -119,13 +121,78 @@ get_os_type () {
     esac
 }
 
+is_indexed_array () {
+  VARIABLE_NAME="$1"
+  if DECLARATION=`declare -p $VARIABLE_NAME 2>&1`; then
+    echo "$DECLARATION" | cut -d= -f1 | grep -qE '^(declare|typeset).*( -a )'"$VARIABLE_NAME"
+  else
+    return 1
+  fi  
+}
+
+is_associative_array () {
+  VARIABLE_NAME="$1"
+  if DECLARATION=`declare -p $VARIABLE_NAME 2>&1`; then
+    echo "$DECLARATION" | cut -d= -f1 | grep -qE '^(declare|typeset).*( -A )'"$VARIABLE_NAME"
+  else
+    return 1
+  fi  
+}
+
+is_array () {
+  is_indexed_array "$1" || is_associative_array "$1"
+}
+
+each () {
+  local HELP_MSG="
+    Usage:
+      each (KEY|VALUE|KEY,VALUE) in ASSOCIATIVE_ARRAY_NAME run FUNCTION_NAME
+      each VALUE in INDEXED_ARRAY_NAME run FUNCTION_NAME
+  "
+  KEY_OR_VALUE="$1"
+  ARRAY_NAME="$3"
+  FUNCTION_NAME="$5"
+  if [[ "$2" != 'in' ]] || [[ "$4" != 'run' ]]; then
+    msg-error "$HELP_MSG"
+    return 1
+  elif [[ "$KEY_OR_VALUE" != "KEY" ]] && [[ "$KEY_OR_VALUE" != "VALUE" ]] && [[ "$KEY_OR_VALUE" != "KEY,VALUE" ]]; then
+    msg-error "$HELP_MSG"
+    return 1
+  fi
+  if is_indexed_array "$ARRAY_NAME"; then
+    eval 'for VALUE in "${'"$ARRAY_NAME"'[@]}"; do '"$FUNCTION_NAME"' "$VALUE"; done'
+  elif is_associative_array "$ARRAY_NAME"; then
+    if [ -n "$BASH_VERSION" ]; then
+      eval 'for KEY in "${!'$ARRAY_NAME'[@]}"; do VALUE="${'$ARRAY_NAME'[$KEY]}";'"$FUNCTION_NAME"' "$KEY" "$VALUE"; done'
+    elif [ -n "$ZSH_VERSION" ]; then
+      eval 'for KEY VALUE in "${(kv)'"$ARRAY_NAME"'[@]}"; do '"$FUNCTION_NAME"' "$KEY" "$VALUE"; done'
+    fi
+  else
+    msg-error "$HELP_MSG"
+    return 1
+  fi
+}
+
 contains () {
   if [ "$2" != 'in' ]; then
     msg-error "
     Usage:
-      contains {key} in {array}
+      contains {key} in {associative_array}
+      contains {value} in {indexed_array}
     "
     return 1
   fi
-  eval '[ ${'$3'[$1]+true} ]'
+  NEEDLE="$1"
+  HAYSTACK="$3"
+  echo "Needle: $NEEDLE, Haystack: $HAYSTACK"
+  if is_indexed_array "$HAYSTACK"; then
+    eval 'for ITEM in "${'"$HAYSTACK"'[@]}"; do if [[ "$ITEM" == "'"$NEEDLE"'" ]]; then return 0; fi; done'
+  elif is_associative_array "$HAYSTACK"; then
+    if [ -n "$BASH_VERSION" ]; then
+      eval 'for KEY in "${!'$HAYSTACK'[@]}"; do if [[ "$KEY" == "'"$NEEDLE"'" ]]; then return 0; fi; done'
+    elif [ -n "$ZSH_VERSION" ]; then
+      eval 'for KEY VALUE in "${(kv)'"$HAYSTACK"'[@]}"; do if [[ "$KEY" == "'"$NEEDLE"'" ]]; then return 0; fi; done'
+    fi
+  fi
+  return 1
 }

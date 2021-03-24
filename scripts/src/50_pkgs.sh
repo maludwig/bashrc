@@ -28,11 +28,11 @@ brli () { brew list --versions; }
 brlig () { brew list --versions | grep "$@"; }
 brr () { brew remove "$@"; }
 
-brci () { brew cask install "$@"; }
-brcu () { brew cask update "$@"; }
-brclg () { brew cask search "$@"; }
-brcli () { brew cask list --versions; }
-brclig () { brew cask list --versions | grep "$@"; }
+brci () { brew install --cask "$@"; }
+brcu () { brew update --cask "$@"; }
+brclg () { brew search --cask "$@"; }
+brcli () { brew list --cask --versions; }
+brclig () { brew list --cask --versions | grep "$@"; }
 
 apti () { be_root apt-get -y install "$@"; }
 apts () { be_root apt-get -s install "$@"; }

@@ -13,8 +13,27 @@ _echo-err_test () {
 }
 
 _date-today_test () {
-  STDOUT_OUTPUT=`date-today`
   date-today | grep -qE '^20[0-9][0-9]-[0-1][0-9]-[0-3][0-9]$'
+}
+
+_date-today-local_test () {
+  date-today-local | grep -qE '^20[0-9][0-9]-[0-1][0-9]-[0-3][0-9]$'
+}
+
+_date-second_test () {
+  date-second | grep -qE '^20[0-9][0-9]-[0-1][0-9]-[0-3][0-9]_[0-9][0-9]-[0-9][0-9]-[0-9][0-9]Z$'
+}
+
+_date-second-local_test () {
+  date-second-local | grep -qE '^20[0-9][0-9]-[0-1][0-9]-[0-3][0-9]_[0-9][0-9]-[0-9][0-9]-[0-9][0-9]$'
+}
+         
+_date-8601_test () {
+  date-8601 | grep -qE '^20[0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9][-+]0000$'
+}
+         
+_date-8601-local_test () {
+  date-8601 | grep -qE '^20[0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9][-+][0-9][0-9][0-9][0-9]$'
 }
 
 _commands_exist_test () {
@@ -34,15 +53,6 @@ _commands_exist_test () {
   return 1
 }
 
-# function date-today { echo $(date +%F); }
-# function date-second { echo $(date +%F_%H-%M-%S); }
-# function date-8601 { date -u +%Y-%m-%dT%H:%M:%S%z; }
-# function date-8601-local { date +%Y-%m-%dT%H:%M:%S%z; }
-# function log-8601 { echo "[ $(date-8601) ] $@"; }
-# function log-8601-local { echo "[ $(date-8601-local) ] $@"; }
-# function log-err-8601 { echo-err "[ $(date-8601) ] $@"; }
-# function log-err-8601-local { echo-err "[ $(date-8601-local) ] $@"; }
-
 # function ask { echo -ne "${CYELLOW} $1: ${CDEFAULT}"; read ASK; export ASK; }
 # function ask-default { echo -ne "${CYELLOW} $1 [$2]: ${CDEFAULT}"; read ASK; export ASK=${ASK:-$2}; }
 # function ask-yes { echo -ne "${CYELLOW} $1 [Y/n]: ${CDEFAULT}"; read ASK; ASK="$(echo $ASK | tr '[:upper:]' '[:lower:]' | head -c 1)"; export ASK=${ASK:-y}; }
@@ -61,5 +71,62 @@ _commands_exist_test () {
 # function trim-trailing { echo "$1" | sed -e 's/[[:space:]]*$//'; }
 # function trim { trim-leading `trim-trailing "$1"`; }
 
-TESTS=(_SCRIPT_DIR_test _echo-err_test _date-today_test _commands_exist_test)
+_each_test_output () {
+  echo "${ARRAY_NAME}[${KEY}]=$VALUE"
+}
+
+_each_basic_test () {
+  declare -A Y=()
+  msg-info "BLANK"
+  EACH_OUTPUT=`each KEY,VALUE in Y run _each_test_output`
+  echo "$EACH_OUTPUT"
+  [[ "$EACH_OUTPUT" == "" ]] || return 1
+  msg-info "ONELEME"
+  Y[a]=1
+  EACH_OUTPUT=`each KEY,VALUE in Y run _each_test_output`
+  echo "$EACH_OUTPUT"
+  declare -p Y
+  [[ "$EACH_OUTPUT" == 'Y[a]=1' ]] || return 2
+  
+  msg-info "MEZZ"
+  K='a b c'
+  Y[$K]="1 2 3"
+  EACH_OUTPUT=`each KEY,VALUE in Y run _each_test_output | sort`
+  echo "$EACH_OUTPUT"
+  declare -p Y
+  [[ "$EACH_OUTPUT" == $'Y[a b c]=1 2 3\nY[a]=1' ]] || return 3
+  
+  return 0
+}
+
+_contains_associative_test () {
+  declare -A Y=()
+  ! contains blah in Y
+  Y[blah]=bleh
+  contains blah in Y
+  ! contains xx in Y
+  K='a b c'
+  ! contains "$K" in Y
+  Y[$K]='1 2 3'
+  declare -p Y
+  contains "$K" in Y
+}
+
+_contains_indexed_test () {
+  declare -a Y=()
+  ! contains blah in Y
+  Y+=(blah)
+  contains blah in Y
+  ! contains xx in Y
+  K='a b c'
+  ! contains "$K" in Y
+  Y+=("$K")
+  contains "$K" in Y
+}
+
+TESTS=(
+  _SCRIPT_DIR_test _echo-err_test 
+  _date-today_test _date-today-local_test _date-second_test _date-second-local_test _date-8601_test _date-8601-local_test
+  _commands_exist_test _each_basic_test _contains_associative_test _contains_indexed_test
+)
 

@@ -634,4 +634,29 @@ cd_find () {
 
 alias chmox='chmod +x'
 
+millis_for_cmd () {
+	START_NANOS=`date +%s.%N`
+  "$@"
+  END_NANOS=`date +%s.%N`
+  DURATION_MILLIS="$( python -c 'print(1000 * ('"$END_NANOS - $START_NANOS"'))' )"
+  echo "Duration (ms): $DURATION_MILLIS"
+}
+
+function avg { python -c 'import sys; nums=[float(n) for n in sys.argv[1:]]; print(sum(nums) / len(nums))' "$@" ; }
+
+run_n_times () { 
+    local TIMES="$1";
+    shift 1;
+    ALL_DURATIONS=();
+    for X in `seq $TIMES`;
+    do
+        millis_for_cmd "$@";
+        ALL_DURATIONS+=("$DURATION_MILLIS");
+    done
+    echo "Durations:"
+    for DURATION_MILLIS in "${ALL_DURATIONS[@]}"; do
+      echo " = $DURATION_MILLIS"
+    done
+    echo "Average: $(avg "${ALL_DURATIONS[@]}")"
+}
 

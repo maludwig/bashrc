@@ -81,14 +81,16 @@ if [[ "$BASHRC_LOADED" != "yes" ]]; then
 
   # Bash aliases
   if [ -f $BASHRC_DIR/aliases ]; then
-    . $BASHRC_DIR/aliases
+    source $BASHRC_DIR/aliases
   fi
   # Default variables
   
-  if [ -n "$BASH_VERSION" ]; then
-    HOST_ALIAS='\H'
-  elif [ -n "$ZSH_VERSION" ]; then
-    HOST_ALIAS="%m"
+  if [[ "$HOST_ALIAS" == "" ]]; then
+    if [ -n "$BASH_VERSION" ]; then
+      HOST_ALIAS='\H'
+    elif [ -n "$ZSH_VERSION" ]; then
+      HOST_ALIAS="%m"
+    fi
   fi
   if [[ "$USER" == "" ]]; then
     USER="${USERNAME}"
@@ -113,19 +115,6 @@ if [[ "$BASHRC_LOADED" != "yes" ]]; then
   assert-path "/opt/python2.7/bin"
 
   assert-path "$BASHRC_DIR/bin"
-
-  # EC2 Environment
-  una=`uname -a`
-  if echo "$una" | grep "amzn" > /dev/null; then
-    if [ -f $BASHRC_DIR/amzn ]; then
-      . $BASHRC_DIR/amzn
-    fi
-  fi
-
-  # Host specific variables
-  if [ -f $BASHRC_DIR/hostvars ]; then
-    . $BASHRC_DIR/hostvars
-  fi
 
   if [ -n "$BASH_VERSION" ]; then
     PS1='$(ps1_msg)'"\[${CUSER}\]\u@\[${CYELLOW}\]${HOST_ALIAS}:\[${CGREEN}\]\w\[${CDEFAULT}\] "$'\n$ '
