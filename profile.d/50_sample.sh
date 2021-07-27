@@ -31,3 +31,11 @@ ps1_add_fn date-8601-local CYAN
 
 # Show the last return code
 toggle_return_code_prompt
+
+
+# Set the terminal title to the instance name and the current working directory
+ps1_title () {
+  set_terminal_title "$INSTANCE_NAME:$PWD"
+}
+ps1_add_fn ps1_title RED '' ''
+

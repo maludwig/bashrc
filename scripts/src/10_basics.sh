@@ -184,7 +184,6 @@ contains () {
   fi
   NEEDLE="$1"
   HAYSTACK="$3"
-  echo "Needle: $NEEDLE, Haystack: $HAYSTACK"
   if is_indexed_array "$HAYSTACK"; then
     eval 'for ITEM in "${'"$HAYSTACK"'[@]}"; do if [[ "$ITEM" == "'"$NEEDLE"'" ]]; then return 0; fi; done'
   elif is_associative_array "$HAYSTACK"; then
