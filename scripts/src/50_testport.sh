@@ -14,19 +14,20 @@ is_ip_address () {
   is_ipv4_address "$1" || is_ipv6_address "$1"
 }
 
-list_local_ips () {
-  if commands_exist ifconfig; then
+list_local_ips ()
+{
+  if commands_exist ip; then
+    IFCFG_LINES=`ip a | grep 'inet'`
+  elif commands_exist ifconfig; then
     IFCFG_LINES=""
     for IFACE in $(ifconfig -lu); do
       IFACE_CONFIG="$(ifconfig $IFACE)"
-      if echo "$IFACE_CONFIG" | grep -q "status: active" || echo "$IFACE_CONFIG" | grep -q "LOOPBACK" ; then
-        if echo "$IFACE_CONFIG" | grep -q 'inet ' ; then
+      if echo "$IFACE_CONFIG" | grep -q "status: active" || echo "$IFACE_CONFIG" | grep -q "LOOPBACK"; then
+        if echo "$IFACE_CONFIG" | grep -q 'inet '; then
           IFCFG_LINES="${IFCFG_LINES}"$'\n'"$(echo "$IFACE_CONFIG" | grep 'inet')"
         fi
       fi
     done
-  elif commands_exist ip; then
-    IFCFG_LINES=`ip a | grep 'inet'`
   else
     echo-err "Could not find 'ifconfig' or 'ip'"
     return 1
