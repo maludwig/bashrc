@@ -557,39 +557,6 @@ function rainbow-sleep {
   echo -ne "${HEAD_COLOR}.${CDEFAULT}"
 }
 
-
-add_to_backlist () { 
-    NEWBACKLIST=("$PWD");
-    for ONEDIR in ${BACKLIST[@]}; do
-        if [[ "$ONEDIR" != "$PWD" ]]; then
-            NEWBACKLIST+=("$ONEDIR");
-        fi;
-    done;
-    BACKLIST=("${NEWBACKLIST[@]}")
-}
-
-go_back_to_match () {
-    REGEX=`echo "$@" | sed -E 's| |.*/.*|g'`'[^/]*$';
-    msg-info "Regex: $REGEX"
-    for ONEDIR in ${BACKLIST[@]}; do
-        if echo "$ONEDIR" | grep --color=auto --color=auto -E "$REGEX"; then
-            cd "$ONEDIR";
-            break;
-        fi;
-    done
-}
-
-alias b='go_back_to_match'
-alias bac='go_back_to_match "$PWD"'
-
-print_backlist () {
-    for ONEDIR in ${BACKLIST[@]};
-    do
-        msg-dry "- $ONEDIR";
-    done;
-}
-
-
 sort_inplace () {
   THEFILE="$1";
   shift;
@@ -660,3 +627,9 @@ run_n_times () {
     echo "Average: $(avg "${ALL_DURATIONS[@]}")"
 }
 
+decrypt_p12 () {
+  INPUT_FILE_PATH="$1"
+  INPUT_FILE_NAME="${INPUT_FILE_PATH%%.*}"
+  openssl pkcs12 -in "$INPUT_FILE_PATH" -out "$INPUT_FILE_NAME".crt.pem -clcerts -nokeys
+  openssl pkcs12 -in "$INPUT_FILE_PATH" -out "$INPUT_FILE_NAME".key.pem -nocerts -nodes
+}

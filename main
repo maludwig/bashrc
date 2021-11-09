@@ -123,7 +123,6 @@ if [[ "$BASHRC_LOADED" != "yes" ]]; then
     PS1='$(ps1_msg)'"${CUSER}%n@${CYELLOW}${HOST_ALIAS}:${CGREEN}%~${CDEFAULT}"$'\n$ '
     # PS1="%{$fg[red]%}%n%{$reset_color%}@%{$fg[blue]%}%m %{$fg[yellow]%}%~ %{$reset_color%}%% "
   fi
-  assert_in_prompt_command 'add_to_backlist'
 
   # Bash history improvements
   if [ -f $BASHRC_DIR/history ]; then
