@@ -628,8 +628,24 @@ run_n_times () {
 }
 
 decrypt_p12 () {
-  INPUT_FILE_PATH="$1"
-  INPUT_FILE_NAME="${INPUT_FILE_PATH%%.*}"
-  openssl pkcs12 -in "$INPUT_FILE_PATH" -out "$INPUT_FILE_NAME".crt.pem -clcerts -nokeys
-  openssl pkcs12 -in "$INPUT_FILE_PATH" -out "$INPUT_FILE_NAME".key.pem -nocerts -nodes
+  if echo "$1" | grep -q ".p12"; then
+    INPUT_FILE_DIR="$(dirname "$1")"
+    INPUT_FILE_BASENAME="$(basename "$1")"
+    ORIGINAL_PWD="$PWD"
+    cd "$INPUT_FILE_DIR"
+    COMMON_NAME="${INPUT_FILE_BASENAME%%.*}"
+    mkdir -p "$COMMON_NAME"
+    cp "$INPUT_FILE_BASENAME" "$COMMON_NAME"
+    cd "$COMMON_NAME"
+    openssl pkcs12 -in "$INPUT_FILE_BASENAME" -out "$COMMON_NAME".crt.pem -clcerts -nokeys
+    cat "$COMMON_NAME".crt.pem
+    openssl pkcs12 -in "$INPUT_FILE_BASENAME" -out "$COMMON_NAME".key.pem -nocerts -nodes
+    cat "$COMMON_NAME".key.pem
+    cd ..
+    zip -r "$COMMON_NAME".zip "$COMMON_NAME/"
+    cd "$ORIGINAL_PWD"
+  else
+    msg-error "Missing input file path"
+    return 1
+  fi
 }
