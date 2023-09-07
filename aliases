@@ -146,7 +146,11 @@ alias gita='git add -A'
 alias gitan='git add -An'
 alias gitc='git commit -m'
 alias gitch='git checkout'
-alias gitchb='git checkout -b'
+function gitchb {
+  NEW_BRANCH="$1"
+  git checkout -b "$NEW_BRANCH"
+  git push --set-upstream origin "$NEW_BRANCH"
+}
 alias gitpush='git push origin HEAD'
 alias gitpull='git pull origin HEAD'
 alias gitgraph='git log --pretty=format:"%C(yellow)%h %C(auto)%d %C(green)%an:%Creset %s %C(cyan) (%cI, %cr)" --all --graph'
