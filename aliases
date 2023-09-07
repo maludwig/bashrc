@@ -393,7 +393,7 @@ function generate-ssh-key {
 	cat "$FILENAME.pub";
 	ask-yes "Shall I add this new key ($FILENAME) to ~/.ssh/config for you?";
 	if [[ "$ASK" != "n" ]]; then
-		prepend "IdentityFile ~/.ssh/$FILENAME" ~/.ssh/config;
+		echo $'\n'"IdentityFile ~/.ssh/$FILENAME" >> ~/.ssh/config;
 		msg-success "Added identity to config"
 	fi
 	grep -q "ensure_running_agent" ~/.bashrc
@@ -648,4 +648,8 @@ decrypt_p12 () {
     msg-error "Missing input file path"
     return 1
   fi
+}
+
+what_is_my_ip () {
+  dig +short myip.opendns.com @resolver1.opendns.com | grep -E '[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' | head -n1
 }
