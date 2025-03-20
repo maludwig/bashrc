@@ -45,7 +45,15 @@ function f {
 function fn {
   find . -name "$@"
 }
-alias hig='history | grep'
+function hig {
+  H="$(history 0)"
+  while (( "$#" > 0 )); do
+    H="$(echo "$H" | grep -- "$1")"
+    shift
+  done
+  echo "$H"
+}
+# alias hig='history | grep'
 function m { if type "$1" | grep -q 'is a shell builtin'; then   /usr/bin/man bash | less -p "^       $1 "; else   /usr/bin/man "$1"; fi }
 
 
