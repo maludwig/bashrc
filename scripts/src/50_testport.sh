@@ -28,6 +28,9 @@ list_local_ips ()
         fi
       fi
     done
+  elif commands_exist ipconfig; then
+    ipconfig | grep -E '^\s+IPv[46] Address.' | sed -E 's/^\s+IPv[46] Address[. ]+:\s+//'
+    return 0
   else
     echo-err "Could not find 'ifconfig' or 'ip'"
     return 1
