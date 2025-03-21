@@ -45,8 +45,13 @@ function f {
 function fn {
   find . -name "$@"
 }
+if [ -n "$ZSH_VERSION" ]; then
+  alias full_history='history 0'
+else
+  alias full_history='history'
+fi
 function hig {
-  H="$(history 0)"
+  H="$(full_history)"
   while (( "$#" > 0 )); do
     H="$(echo "$H" | grep -- "$1")"
     shift
